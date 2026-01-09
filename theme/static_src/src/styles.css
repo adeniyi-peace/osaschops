@@ -1,0 +1,69 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+
+
+@theme {
+  /* 🔥 Brand Core */
+  --color-primary: #f7931e;
+  --color-primary-dark: #e86c0a;
+  --color-primary-light: #ffc83d;
+
+  /* 🍗 Food Accents */
+  --color-fried-brown: #8b4a1d;
+  --color-chicken-gold: #c97a1a;
+  --color-cream: #fff3d6;
+
+  /* 🖤 Neutrals */
+  --color-charcoal: #111111;
+  --color-soft-black: #1a1a1a;
+  --color-off-white: #fafafa;
+
+  /* Typography */
+  --font-heading: "Poppins", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* Border Radius */
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.5rem;
+
+  /* Box Shadows */
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --shadow-soft: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-heavy: 0 12px 40px rgba(0, 0, 0, 0.2);
+
+  /* Spacing */
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
+}
+
+/* 2. DaisyUI Theme Configuration */
+/* DaisyUI 5.0+ (designed for TW4) uses data-theme attributes */
+[data-theme="osaschops"] {
+  --color-primary: #f7931e;
+  --color-primary-content: #111111;
+  --color-secondary: #e86c0a;
+  --color-accent: #ffc83d;
+  --color-neutral: #1a1a1a;
+  --color-neutral-content: #fafafa;
+  --color-base-100: #ffffff;
+  --color-base-200: #fafafa;
+  --color-base-300: #fff3d6;
+  --color-base-content: #111111;
+  --color-info: #ffc83d;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+}
+
+
+
+/**
+  * A catch-all path to Django template files, JavaScript, and Python files
+  * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
+  *
+  * If your final CSS file is not being updated after code changes, you may want to broaden or narrow
+  * the scope of this path.
+  */
+@source "../../../**/*.{html,py,js}";

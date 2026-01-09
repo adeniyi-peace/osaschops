@@ -1,0 +1,96 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" data-theme="osaschops">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Login | Osaschops</title>
+    {% tailwind_css %}
+    
+</head>
+<body class="bg-charcoal min-h-screen flex items-center justify-center p-4">
+
+    <div class="max-w-md w-full" data-aos="fade-up">
+        <div class="text-center mb-10">
+            <h1 class="font-heading text-5xl font-black text-white uppercase italic tracking-tighter">
+                OSAS<span class="text-primary">CHOPS</span>
+            </h1>
+            <div class="flex items-center justify-center gap-2 mt-2">
+                <span class="h-px w-8 bg-primary/30"></span>
+                <p class="text-gray-400 font-bold uppercase tracking-[0.3em] text-[10px]">Vendor Command</p>
+                <span class="h-px w-8 bg-primary/30"></span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[3rem] p-10 shadow-heavy border border-white/10">
+            <div class="mb-8">
+                <h2 class="text-2xl font-heading font-black text-charcoal uppercase italic tracking-tight">Staff Login</h2>
+                <p class="text-xs text-gray-500 font-medium">Enter your credentials to access the kitchen dashboard.</p>
+            </div>
+
+
+        <div class="bg-white rounded-[3rem] p-10 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/10 blur-3xl rounded-full"></div>
+
+            <form method="POST" class="space-y-6 relative z-10">
+                {% csrf_token %}
+                
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-black uppercase text-[10px] tracking-widest text-gray-500">Username</span></label>
+                    <input type="text" name="username" placeholder="admin_osas" class="input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-2 focus:ring-primary font-bold" required>
+                </div>
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-black uppercase text-[10px] tracking-widest text-gray-500">Password</span></label>
+                    <input type="password" name="password" placeholder="••••••••" class="input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                </div>
+
+                <div class="flex items-center justify-between px-1">
+                    <label class="label cursor-pointer gap-2">
+                        <input type="checkbox" class="checkbox checkbox-xs checkbox-primary rounded" />
+                        <span class="label-text text-[10px] font-bold uppercase text-gray-400">Remember Me</span>
+                    </label>
+                    <a href="#" class="text-[10px] font-bold uppercase text-primary hover:underline">Forgot?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-full rounded-full btn-lg font-black uppercase italic shadow-lg shadow-orange-500/20 mt-4 transition-transform hover:scale-[1.02]">
+                    Enter Kitchen
+                </button>
+            </form>
+        </div>
+
+        <!-- <div class="bg-white rounded-[3rem] p-10 shadow-2xl grid md:grid-cols-2 gap-10 max-w-4xl w-full">
+        <div class="space-y-6">
+            <h2 class="text-3xl font-black uppercase italic tracking-tighter">Join the <span class="text-primary">Levels</span></h2>
+            <p class="text-sm text-gray-500">Create a staff account to manage live orders and kitchen logistics.</p>
+            
+            <div class="space-y-4 pt-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-cream flex items-center justify-center text-primary font-bold">✓</div>
+                    <p class="text-xs font-bold uppercase text-gray-600">Live Order Tracking</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-cream flex items-center justify-center text-primary font-bold">✓</div>
+                    <p class="text-xs font-bold uppercase text-gray-600">Menu Management</p>
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" class="space-y-4">
+            {% csrf_token %}
+            <input type="text" name="full_name" placeholder="Full Name" class="input input-bordered w-full rounded-xl bg-base-200 border-none">
+            <input type="email" name="email" placeholder="Email Address" class="input input-bordered w-full rounded-xl bg-base-200 border-none">
+            <input type="password" name="password" placeholder="Create Password" class="input input-bordered w-full rounded-xl bg-base-200 border-none">
+            <button class="btn btn-primary w-full rounded-full font-black uppercase italic">Request Access</button>
+        </form>
+    </div> -->
+
+        <div class="text-center mt-8">
+            <a href="/" class="text-gray-500 font-bold uppercase text-[10px] tracking-widest hover:text-white transition-colors">
+                ← Back to Main Website
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

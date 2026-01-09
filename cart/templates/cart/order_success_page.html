@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="min-h-[80vh] flex items-center justify-center bg-base-200/30 py-12">
+    <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto bg-white rounded-[3rem] shadow-heavy overflow-hidden" data-aos="zoom-in">
+            
+            <div class="bg-charcoal p-10 text-center relative">
+                <div class="absolute inset-0 bg-primary/10 blur-3xl rounded-full scale-75"></div>
+                
+                <div class="relative z-10">
+                    <div class="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-orange-500/40 animate-bounce">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-soft-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <h1 class="text-4xl font-heading font-black uppercase italic tracking-tighter text-white mb-2">
+                        Order <span class="text-primary">Confirmed!</span>
+                    </h1>
+                    <p class="text-gray-400 font-medium uppercase tracking-widest text-xs">Order ID: #OSAS-{{ order.id|default:"12345" }}</p>
+                </div>
+            </div>
+
+            <div class="p-8 md:p-12">
+                <div class="text-center mb-10">
+                    <h2 class="text-xl font-bold text-charcoal mb-2">Levels achieved! 🍗</h2>
+                    <p class="text-gray-500 max-w-sm mx-auto">Your order has been received. We are currently prepping your chops to ensure they arrive hot and crunchy.</p>
+                </div>
+
+                <div class="bg-base-200 rounded-3xl p-6 mb-8">
+                    <div class="flex justify-between items-center mb-4 border-b border-cream pb-4">
+                        <span class="font-bold uppercase text-xs text-gray-500">Delivery To</span>
+                        <span class="font-bold text-charcoal text-sm text-right">{{ order.full_name }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold uppercase text-xs text-gray-500">Estimated Delivery</span>
+                        <span class="font-black text-primary text-sm">30 - 45 Minutes</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <a href="{% url 'menu' %}" class="btn btn-outline border-charcoal text-charcoal rounded-full font-bold uppercase py-4">
+                        Order More
+                    </a>
+                    <a href="https://wa.me/2348053384458?text=Hi%20Osaschops,%20I'm%20checking%20on%20order%20#{{ order.id }}" 
+                       class="btn btn-primary rounded-full font-black uppercase italic shadow-lg shadow-orange-500/20">
+                        Track on WhatsApp
+                    </a>
+                </div>
+
+                <p class="text-center mt-8 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                    A confirmation email has been sent to {{ order.email|default:"your inbox" }}
+                </p>
+            </div>
+        </div>
+        
+        <div class="text-center mt-12" data-aos="fade-up" data-aos-delay="400">
+            <p class="text-sm font-bold text-gray-500 uppercase mb-4">Post your chops and tag us!</p>
+            <div class="flex justify-center gap-6 text-gray-400">
+                <span class="hover:text-primary cursor-pointer transition-colors font-bold tracking-tighter italic">Instagram</span>
+                <span class="hover:text-primary cursor-pointer transition-colors font-bold tracking-tighter italic">TikTok</span>
+                <span class="hover:text-primary cursor-pointer transition-colors font-bold tracking-tighter italic">X (Twitter)</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

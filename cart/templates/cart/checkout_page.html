@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="bg-base-200/50 min-h-screen pb-20">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4" data-aos="fade-down">
+            <div>
+                <h1 class="text-3xl font-heading font-black uppercase italic tracking-tighter">
+                    Finalize <span class="text-primary">Order</span>
+                </h1>
+                <p class="text-gray-500 font-medium text-sm mt-1">Complete your details to get your chops delivered.</p>
+            </div>
+            <div class="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                <span class="text-gray-400">Bag</span>
+                <span class="text-gray-300">/</span>
+                <span class="text-primary underline underline-offset-4">Checkout</span>
+                <span class="text-gray-300">/</span>
+                <span class="text-gray-400">Payment</span>
+            </div>
+        </div>
+
+        <form method="POST" id="checkout-form" class="grid lg:grid-cols-3 gap-8">
+            {% csrf_token %}
+            
+            <div class="lg:col-span-2 space-y-6">
+                
+                <div class="bg-white p-6 md:p-10 rounded-[2rem] shadow-card border border-cream/50" data-aos="fade-up">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-10 h-10 bg-cream rounded-full flex items-center justify-center text-primary font-bold">1</div>
+                        <h2 class="font-heading font-black uppercase text-xl">Contact Information</h2>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-bold uppercase text-xs">Full Name</span></label>
+                            <input type="text" name="full_name" placeholder="e.g. Osas Ighodaro" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full" required />
+                        </div>
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-bold uppercase text-xs">Phone Number</span></label>
+                            <input type="tel" name="phone" placeholder="080XXXXXXXX" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full" required />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 md:p-10 rounded-[2rem] shadow-card border border-cream/50" data-aos="fade-up" data-aos-delay="100">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-10 h-10 bg-cream rounded-full flex items-center justify-center text-primary font-bold">2</div>
+                        <h2 class="font-heading font-black uppercase text-xl">Delivery Address</h2>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-bold uppercase text-xs">Street Address / Estate Name</span></label>
+                            <input type="text" name="address" placeholder="House number and street name" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full" required />
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="form-control w-full">
+                                <label class="label"><span class="label-text font-bold uppercase text-xs">Area / City</span></label>
+                                <select name="area" class="select select-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full">
+                                    <option disabled selected>Select Area</option>
+                                    <option>Lekki Phase 1</option>
+                                    <option>Ikeja</option>
+                                    <option>Surulere</option>
+                                    <option>Yaba</option>
+                                </select>
+                            </div>
+                            <div class="form-control w-full">
+                                <label class="label"><span class="label-text font-bold uppercase text-xs">Delivery Note (Optional)</span></label>
+                                <input type="text" name="note" placeholder="Gate code or landmarks" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 md:p-10 rounded-[2rem] shadow-card border border-cream/50" data-aos="fade-up" data-aos-delay="200">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-10 h-10 bg-cream rounded-full flex items-center justify-center text-primary font-bold">3</div>
+                        <h2 class="font-heading font-black uppercase text-xl">Payment Method</h2>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="label cursor-pointer p-4 rounded-2xl border-2 border-base-200 has-[:checked]:border-primary has-[:checked]:bg-cream/20 transition-all">
+                            <div class="flex items-center gap-4">
+                                <input type="radio" name="payment" class="radio radio-primary" checked />
+                                <span class="font-bold uppercase text-sm">Paystack (Card/Transfer)</span>
+                            </div>
+                            <img src="https://paystack.com/assets/img/login/paystack-logo.png" class="h-4 hidden md:block grayscale opacity-50" alt="Paystack">
+                        </label>
+                        <label class="label cursor-pointer p-4 rounded-2xl border-2 border-base-200 has-[:checked]:border-primary has-[:checked]:bg-cream/20 transition-all">
+                            <div class="flex items-center gap-4">
+                                <input type="radio" name="payment" class="radio radio-primary" />
+                                <span class="font-bold uppercase text-sm">Pay on Delivery</span>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="bg-charcoal text-white p-8 rounded-[2.5rem] shadow-heavy sticky top-28">
+                    <h2 class="font-heading font-black uppercase italic text-xl mb-6 border-b border-white/10 pb-4">
+                        Review <span class="text-primary">Order</span>
+                    </h2>
+                    
+                    <div class="max-h-60 overflow-y-auto mb-6 pr-2 custom-scrollbar">
+                        {% for item in cart_items %}
+                        <div class="flex justify-between items-center mb-4">
+                            <div class="flex gap-3">
+                                <span class="text-primary font-black">x{{ item.quantity }}</span>
+                                <span class="text-sm font-medium text-gray-300 truncate w-32">{{ item.product.name }}</span>
+                            </div>
+                            <span class="font-bold">₦{{ item.total_item_price }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="space-y-3 border-t border-white/10 pt-6">
+                        <div class="flex justify-between text-gray-400 text-sm">
+                            <span>Subtotal</span>
+                            <span>₦{{ total_price }}</span>
+                        </div>
+                        <div class="flex justify-between text-gray-400 text-sm">
+                            <span>Delivery Fee</span>
+                            <span class="text-success">₦2,500</span>
+                        </div>
+                        <div class="flex justify-between items-end pt-4">
+                            <span class="font-heading font-bold uppercase">Total to Pay</span>
+                            <span class="text-3xl font-black text-primary tracking-tighter">₦{{ total_with_delivery }}</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full btn-lg rounded-full mt-8 text-soft-black font-black uppercase italic shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform">
+                        Confirm & Pay
+                    </button>
+
+                    <p class="text-[10px] text-center text-gray-500 mt-6 uppercase tracking-widest font-bold">
+                        By clicking, you agree to Osaschops Terms of Service
+                    </p>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}

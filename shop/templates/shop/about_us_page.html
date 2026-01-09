@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="relative py-20 overflow-hidden bg-white">
+    <div class="container mx-auto px-4 grid lg:grid-cols-2 gap-16 items-center">
+        <div data-aos="fade-right">
+            <span class="text-primary font-black uppercase tracking-[0.3em] text-xs mb-4 block">The Osaschops Way</span>
+            <h1 class="text-5xl lg:text-7xl font-heading font-black uppercase italic tracking-tighter leading-none mb-8">
+                Chops that <br><span class="text-primary">Define Levels</span>
+            </h1>
+            <div class="space-y-6 text-gray-600 font-medium leading-relaxed">
+                <p>
+                    Osaschops started with a simple belief: Small chops shouldn't just be a side dish; they should be the highlight of the event. We've spent years perfecting the crunch of our Samosas and the spice of our proteins.
+                </p>
+                <p>
+                    In a world of "regular" snacks, we choose to provide **Levels**. Every tray that leaves our kitchen is a testament to Nigerian culinary excellence, crafted with fresh ingredients and a passion for flavor.
+                </p>
+            </div>
+        </div>
+
+        <div class="relative" data-aos="fade-left">
+            <div class="aspect-square rounded-[3rem] overflow-hidden shadow-heavy border-8 border-cream">
+                <img src="{% static 'images/about-chef.jpg' %}" alt="Our Kitchen" class="w-full h-full object-cover">
+            </div>
+            <div class="absolute -bottom-10 -left-10 bg-charcoal text-white p-8 rounded-3xl shadow-heavy hidden md:block">
+                <p class="text-4xl font-black text-primary italic">100%</p>
+                <p class="text-xs font-bold uppercase tracking-widest text-gray-400">Freshly Fried <br>Guaranteed</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-24 bg-base-200">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <h2 class="text-4xl font-heading font-black uppercase italic tracking-tighter">Why We Are <span class="text-primary">Different</span></h2>
+            <div class="h-1.5 w-24 bg-primary mx-auto mt-4 rounded-full"></div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-white p-10 rounded-[2.5rem] shadow-soft hover:shadow-heavy transition-all group" data-aos="fade-up">
+                <div class="w-16 h-16 bg-cream rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">🥇</div>
+                <h3 class="font-heading font-bold text-xl uppercase mb-4">Premium Quality</h3>
+                <p class="text-sm text-gray-500 leading-relaxed">We source only the finest flours and freshest meats. No shortcuts, just pure levels of quality in every bite.</p>
+            </div>
+
+            <div class="bg-white p-10 rounded-[2.5rem] shadow-soft hover:shadow-heavy transition-all group" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-16 h-16 bg-cream rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">👨‍🍳</div>
+                <h3 class="font-heading font-bold text-xl uppercase mb-4">Hand-Folded</h3>
+                <p class="text-sm text-gray-500 leading-relaxed">Every Spring Roll and Samosa is folded by hand by our experts, ensuring the perfect crunch and filling ratio.</p>
+            </div>
+
+            <div class="bg-white p-10 rounded-[2.5rem] shadow-soft hover:shadow-heavy transition-all group" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-16 h-16 bg-cream rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">🚚</div>
+                <h3 class="font-heading font-bold text-xl uppercase mb-4">Timely Delivery</h3>
+                <p class="text-sm text-gray-500 leading-relaxed">Whether it's a solo craving or a party of 500, we deliver your chops hot and right when you need them.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-20 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="bg-charcoal rounded-[4rem] p-10 md:p-20 relative overflow-hidden text-center">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px] rounded-full"></div>
+            
+            <div class="relative z-10 max-w-2xl mx-auto">
+                <h2 class="text-4xl md:text-6xl font-heading font-black text-white uppercase italic tracking-tighter mb-6 leading-none">
+                    Hosting an <span class="text-primary">Event?</span>
+                </h2>
+                <p class="text-gray-400 mb-10 font-medium">From corporate launches to intimate birthdays, let Osaschops handle the flavors. We provide customized platters and professional service.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="https://wa.me/2348053384458" class="btn btn-primary btn-lg rounded-full px-12 text-soft-black font-black uppercase italic shadow-lg shadow-orange-500/20">
+                        Chat with Us
+                    </a>
+                    <a href="{% url 'menu' %}" class="btn btn-outline border-white text-white btn-lg rounded-full px-12 hover:bg-white hover:text-charcoal transition-all font-bold">
+                        Browse Platter Menu
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

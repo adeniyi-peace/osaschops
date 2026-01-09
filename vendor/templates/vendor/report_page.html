@@ -1,0 +1,131 @@
+{% extends 'vendor_base.html' %}
+{% load static %}
+
+{% block vendor_content %}
+<div class="space-y-8">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div>
+            <h1 class="text-3xl font-heading font-black uppercase italic tracking-tighter">
+                Sales <span class="text-primary">& Analytics</span>
+            </h1>
+            <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Track your growth and chops performance</p>
+        </div>
+        
+        <div class="flex items-center gap-2 bg-white p-2 rounded-2xl shadow-soft border border-cream">
+            <input type="date" class="bg-transparent text-xs font-bold uppercase p-2 focus:outline-none">
+            <span class="text-gray-300">to</span>
+            <input type="date" class="bg-transparent text-xs font-bold uppercase p-2 focus:outline-none">
+            <button class="btn btn-primary btn-sm rounded-xl font-black uppercase italic">Filter</button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-charcoal p-8 rounded-[2.5rem] text-white shadow-heavy relative overflow-hidden">
+            <div class="relative z-10">
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Total Revenue</p>
+                <h2 class="text-4xl font-black text-primary italic">₦2.4M</h2>
+                <p class="text-xs font-medium text-success mt-2">↑ 12.5% vs last month</p>
+            </div>
+            <div class="absolute -right-4 -bottom-4 opacity-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+        </div>
+
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-soft border border-cream">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Total Orders</p>
+            <h2 class="text-4xl font-black text-charcoal italic">842</h2>
+            <p class="text-xs font-medium text-gray-500 mt-2">Avg. ₦2,850 per order</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-soft border border-cream">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 mb-2">Event Inquiries</p>
+            <h2 class="text-4xl font-black text-charcoal italic">28</h2>
+            <p class="text-xs font-medium text-primary mt-2">45% Conversion rate</p>
+        </div>
+    </div>
+
+    <div class="grid lg:grid-cols-2 gap-8">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-soft border border-cream">
+            <h3 class="font-heading font-black uppercase italic text-lg mb-6">Revenue <span class="text-primary">Trend</span></h3>
+            <div class="h-64 flex items-end gap-2 px-2">
+                <div class="bg-base-200 w-full rounded-t-lg transition-all hover:bg-primary" style="height: 40%;"></div>
+                <div class="bg-base-200 w-full rounded-t-lg transition-all hover:bg-primary" style="height: 60%;"></div>
+                <div class="bg-base-200 w-full rounded-t-lg transition-all hover:bg-primary" style="height: 45%;"></div>
+                <div class="bg-primary w-full rounded-t-lg transition-all" style="height: 85%;"></div>
+                <div class="bg-base-200 w-full rounded-t-lg transition-all hover:bg-primary" style="height: 70%;"></div>
+                <div class="bg-base-200 w-full rounded-t-lg transition-all hover:bg-primary" style="height: 55%;"></div>
+            </div>
+            <div class="flex justify-between mt-4 text-[10px] font-bold text-gray-400 uppercase">
+                <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+        </div>
+
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-soft border border-cream">
+            <h3 class="font-heading font-black uppercase italic text-lg mb-6">Popular <span class="text-primary">Categories</span></h3>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-xs font-bold uppercase mb-2">
+                        <span>Small Chops Boxes</span>
+                        <span>65%</span>
+                    </div>
+                    <progress class="progress progress-primary w-full" value="65" max="100"></progress>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs font-bold uppercase mb-2">
+                        <span>Event Platters</span>
+                        <span>25%</span>
+                    </div>
+                    <progress class="progress w-full" value="25" max="100"></progress>
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs font-bold uppercase mb-2">
+                        <span>Individual Sides</span>
+                        <span>10%</span>
+                    </div>
+                    <progress class="progress w-full" value="10" max="100"></progress>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-[2.5rem] shadow-soft border border-cream overflow-hidden">
+        <div class="p-8 border-b border-cream">
+            <h3 class="font-heading font-black uppercase italic text-lg tracking-tighter text-charcoal">Loyal <span class="text-primary">Chops Lovers</span></h3>
+        </div>
+        <table class="table table-lg w-full">
+            <thead class="bg-base-200/30">
+                <tr class="text-[10px] font-black uppercase tracking-widest text-gray-500 border-none">
+                    <th>Customer</th>
+                    <th>Orders</th>
+                    <th>Spend</th>
+                    <th class="text-right">Action</th>
+                </tr>
+            </thead>
+            <tbody class="text-sm font-medium">
+                <tr class="border-b border-cream/50">
+                    <td>
+                        <p class="font-black text-charcoal">Tunde Ednut</p>
+                        <p class="text-[10px] text-gray-400">tunde@example.com</p>
+                    </td>
+                    <td class="font-bold">24 Orders</td>
+                    <td class="font-black text-primary">₦84,200</td>
+                    <td class="text-right">
+                        <button class="btn btn-ghost btn-xs font-bold uppercase text-primary">Reward</button>
+                    </td>
+                </tr>
+                <tr class="border-b border-cream/50">
+                    <td>
+                        <p class="font-black text-charcoal">Bolanle Williams</p>
+                        <p class="text-[10px] text-gray-400">bolanle@work.com</p>
+                    </td>
+                    <td class="font-bold">18 Orders</td>
+                    <td class="font-black text-primary">₦62,500</td>
+                    <td class="text-right">
+                        <button class="btn btn-ghost btn-xs font-bold uppercase text-primary">Reward</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

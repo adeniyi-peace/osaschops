@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="bg-cream/20 min-h-screen py-12 md:py-20">
+    <div class="container mx-auto px-4">
+        
+        <div class="max-w-3xl mx-auto text-center mb-12" data-aos="fade-down">
+            <span class="text-primary font-black uppercase tracking-[0.3em] text-xs mb-4 block">Event Catering</span>
+            <h1 class="text-4xl md:text-6xl font-heading font-black uppercase italic tracking-tighter leading-tight">
+                Bring the <span class="text-primary">Levels</span> <br>to Your Event
+            </h1>
+            <p class="text-gray-500 font-medium mt-4 max-w-lg mx-auto">
+                From weddings to corporate launches, we provide premium small chops that keep your guests talking. Fill the form below for a custom quote.
+            </p>
+        </div>
+
+        <div class="max-w-4xl mx-auto bg-white rounded-[3rem] shadow-heavy overflow-hidden border border-cream/50" data-aos="zoom-in">
+            <div class="grid lg:grid-cols-5">
+                
+                <div class="lg:col-span-2 bg-charcoal p-10 text-white flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 blur-3xl rounded-full"></div>
+                    
+                    <div class="relative z-10">
+                        <h3 class="font-heading font-black uppercase italic text-2xl mb-6">Why Us?</h3>
+                        <ul class="space-y-6">
+                            <li class="flex gap-4 items-start">
+                                <span class="text-primary text-xl">✔</span>
+                                <p class="text-sm text-gray-400 font-medium">Professional service with uniformed servers.</p>
+                            </li>
+                            <li class="flex gap-4 items-start">
+                                <span class="text-primary text-xl">✔</span>
+                                <p class="text-sm text-gray-400 font-medium">Hot & fresh onsite frying options.</p>
+                            </li>
+                            <li class="flex gap-4 items-start">
+                                <span class="text-primary text-xl">✔</span>
+                                <p class="text-sm text-gray-400 font-medium">Customizable platters for any guest count.</p>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-10 p-6 bg-white/5 rounded-2xl border border-white/10 relative z-10">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-primary mb-2">Direct Support</p>
+                        <p class="text-xs font-medium text-gray-300">Need an urgent quote? Call us directly:</p>
+                        <p class="font-black text-lg mt-1 text-white">+234 805 338 4458</p>
+                    </div>
+                </div>
+
+                <form method="POST" class="lg:col-span-3 p-8 md:p-12 space-y-6">
+                    {% csrf_token %}
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Full Name</span></label>
+                            <input type="text" name="client_name" placeholder="Enter name" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Phone Number</span></label>
+                            <input type="tel" name="client_phone" placeholder="080..." class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Event Date</span></label>
+                            <input type="date" name="event_date" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                        </div>
+                        <div class="form-control">
+                            <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Guest Count (Est.)</span></label>
+                            <input type="number" name="guest_count" placeholder="e.g. 100" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                        </div>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Event Location</span></label>
+                        <input type="text" name="location" placeholder="e.g. Victoria Island, Lagos" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Package Choice</span></label>
+                        <select name="package" class="select select-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary font-bold">
+                            <option disabled selected>Select Package</option>
+                            <option>Premium Small Chops Platter</option>
+                            <option>Executive Corporate Box</option>
+                            <option>Custom Mix (Buffet Style)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Additional Notes</span></label>
+                        <textarea name="notes" rows="3" class="textarea textarea-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" placeholder="Specific allergies, dietary needs, or event schedule..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full rounded-full btn-lg font-black uppercase italic shadow-lg shadow-orange-500/20 mt-4">
+                        Request Quote
+                    </button>
+                    
+                    <p class="text-[10px] text-center text-gray-400 font-bold uppercase tracking-widest">
+                        We will contact you via WhatsApp or Phone within 24 hours.
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

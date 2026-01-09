@@ -1,0 +1,107 @@
+{% extends 'vendor_base.html' %}
+{% load static %}
+
+{% block vendor_content %}
+<div class="flex flex-col md:flex-row justify-between items-center mb-10 gap-4">
+    <div>
+        <h1 class="text-3xl font-heading font-black uppercase italic tracking-tighter">
+            Kitchen <span class="text-primary">Display</span>
+        </h1>
+        <div class="flex items-center gap-2 mt-1">
+            <span class="relative flex h-3 w-3">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
+            </span>
+            <p class="text-xs font-bold uppercase tracking-widest text-gray-500">Live Connection Active</p>
+        </div>
+    </div>
+    
+    <div class="flex gap-4">
+        <div class="bg-white px-6 py-2 rounded-2xl shadow-soft border border-cream text-center">
+            <p class="text-[10px] font-black uppercase text-gray-400">In Prep</p>
+            <p class="text-xl font-black text-charcoal">08</p>
+        </div>
+        <div class="bg-charcoal px-6 py-2 rounded-2xl shadow-heavy text-center">
+            <p class="text-[10px] font-black uppercase text-primary">Avg. Wait</p>
+            <p class="text-xl font-black text-white">18m</p>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+    
+    {% for order in active_orders %}
+    <div class="card bg-white shadow-heavy rounded-[2.5rem] border-2 border-cream overflow-hidden flex flex-col h-[500px]" id="order-card-{{ order.id }}">
+        
+        <div class="p-6 bg-base-200 flex justify-between items-start border-b-2 border-dashed border-cream">
+            <div>
+                <span class="text-2xl font-black text-charcoal">#{{ order.id|slice:"-4:" }}</span>
+                <p class="text-[10px] font-black uppercase text-gray-500 mt-1">{{ order.customer_name }}</p>
+            </div>
+            <div class="text-right">
+                <span class="badge badge-primary font-bold italic mb-1">{{ order.time_elapsed }}m ago</span>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter italic">Levels: Priority</p>
+            </div>
+        </div>
+
+        <div class="flex-grow p-6 overflow-y-auto custom-scrollbar space-y-4">
+            {% for item in order.items.all %}
+            <div class="flex justify-between items-start">
+                <div class="flex gap-3">
+                    <span class="w-8 h-8 rounded-lg bg-charcoal text-primary flex items-center justify-center font-black text-sm">
+                        {{ item.quantity }}
+                    </span>
+                    <div>
+                        <p class="font-bold text-charcoal uppercase text-sm leading-tight">{{ item.product.name }}</p>
+                        {% if item.note %}
+                        <p class="text-[11px] text-error font-bold italic mt-1">Note: {{ item.note }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="p-4 bg-white border-t border-cream grid grid-cols-2 gap-2">
+            <button onclick="updateOrderStatus('{{ order.id }}', 'ready')" 
+                    class="btn btn-success btn-outline rounded-2xl font-black uppercase text-[10px] tracking-tighter">
+                Ready to Pack
+            </button>
+            
+            <button onclick="updateOrderStatus('{{ order.id }}', 'shipped')" 
+                    class="btn btn-primary rounded-2xl font-black uppercase italic text-[10px] text-soft-black">
+                Send with Rider
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function updateOrderStatus(orderId, status) {
+        // Optimistic UI: Fade out the card
+        const card = document.getElementById(`order-card-${orderId}`);
+        card.style.opacity = '0.5';
+        card.style.transform = 'scale(0.95)';
+
+        fetch(`/vendor/order/${orderId}/update-status/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ status: status })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                card.remove(); // Remove from display once status changes
+                // Show a small toast notification here
+            }
+        });
+    }
+</script>
+{% endblock %}

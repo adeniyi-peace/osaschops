@@ -1,0 +1,235 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en" data-theme="osaschops">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Osaschops | Chops Wey Get Levels{% endblock %}</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;900&family=Poppins:wght@700;900&display=swap" rel="stylesheet">
+
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    {% tailwind_css %}
+    
+    <style>
+        /* Ensuring our TW4 theme fonts are applied */
+        h1, h2, h3, .font-heading { font-family: var(--font-heading); }
+        body { font-family: var(--font-body); }
+        .transition-soft { transition: all 0.3s var(--easing-out-quad, ease-out); }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="min-h-screen flex flex-col bg-base-100 text-charcoal overflow-x-hidden">
+
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-cream shadow-soft">
+        <div class="navbar container mx-auto px-4">
+            <div class="navbar-start">
+                <div class="dropdown">
+                    <label tabindex="0" class="btn btn-ghost lg:hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                    </label>
+                    <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-1 p-2 shadow-card bg-base-100 rounded-2xl w-52 font-medium">
+                        <li><a href="/">Home</a></li>
+                        <li><a>Menu</a></li>
+                        <li><a>About Us</a></li>
+                    </ul>
+                </div>
+                <a href="/" class="text-xl font-heading font-black tracking-tighter uppercase italic">
+                    Osas<span class="text-primary">Chops</span>
+                </a>
+                <div class="flex items-center gap-2">
+                    {% with open_status=store.is_currently_open %} {% if open_status.0 %}
+                            <span class="relative flex h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-success"></span>
+                            </span>
+                            <span class="text-[10px] font-black uppercase text-charcoal tracking-widest">Open Now</span>
+                        {% else %}
+                            <span class="h-3 w-3 rounded-full bg-error"></span>
+                            <span class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Closed</span>
+                        {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+            
+            <div class="navbar-center hidden lg:flex">
+                <ul class="menu menu-horizontal px-1 font-semibold space-x-2">
+                    <li><a href="/" class="hover:text-primary transition-soft">Home</a></li>
+                    <li><a class="hover:text-primary transition-soft">Our Menu</a></li>
+                    <li><a class="hover:text-primary transition-soft">Bulk Orders</a></li>
+                </ul>
+            </div>
+
+            <div class="navbar-end space-x-4">
+                <button class="btn btn-ghost btn-circle">
+                    <div class="indicator">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                        <span class="badge badge-sm badge-primary indicator-item">0</span>
+                    </div>
+                </button>
+                <a class="btn btn-primary text-soft-black font-bold rounded-full px-8 shadow-soft hover:shadow-heavy transition-soft hidden md:flex">Order Now</a>
+            </div>
+        </div>
+    </header>
+
+    <div id="cart-drawer" class="fixed inset-0 z-100 invisible">
+        <div id="drawer-overlay" class="absolute inset-0 bg-charcoal/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
+        
+        <div id="drawer-content" class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-heavy translate-x-full transition-transform duration-300 flex flex-col">
+            
+            <div class="p-6 border-b border-cream flex justify-between items-center bg-white">
+                <h2 class="font-heading font-black uppercase italic tracking-tighter text-xl">
+                    Your <span class="text-primary">Chops Bag</span>
+                </h2>
+                <button onclick="toggleDrawer(false)" class="btn btn-ghost btn-circle">✕</button>
+            </div>
+
+            <div id="drawer-items-list" class="grow overflow-y-auto p-6 space-y-4">
+                <div class="text-center py-10 opacity-50">
+                    <p class="font-bold uppercase text-xs tracking-widest">Bag is loading...</p>
+                </div>
+            </div>
+
+            <div class="p-6 bg-base-200 border-t border-cream">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="font-heading font-bold uppercase text-sm">Subtotal</span>
+                    <span id="drawer-total" class="text-2xl font-black text-charcoal">₦0.00</span>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-3">
+                    <a href="" class="btn btn-outline border-charcoal text-charcoal rounded-full font-bold uppercase text-xs">View Full Bag</a>
+                    <a href="" class="btn btn-primary rounded-full btn-lg font-black uppercase italic shadow-lg shadow-orange-500/20">Checkout Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="fixed top-24 right-4 z-100 flex flex-col gap-3 w-full max-w-sm pointer-events-none">
+        {% if messages %}
+            {% for message in messages %}
+                <div role="alert" 
+                    class="alert shadow-heavy pointer-events-auto transform transition-all duration-500 ease-in-out translate-x-full opacity-0 message-toast 
+                    {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% else %}alert-info{% endif %} rounded-xl"
+                    data-aos="fade-left">
+                    <span class="font-medium text-sm">{{ message }}</span>
+                    <button onclick="this.parentElement.remove()" class="btn btn-ghost btn-xs">✕</button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <main class="grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-charcoal text-off-white pt-16 pb-8">
+        <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12">
+            <div data-aos="fade-up">
+                <h3 class="font-heading text-2xl mb-4 uppercase italic">Osas<span class="text-primary">Chops</span></h3>
+                <p class="text-gray-400 max-w-xs">Chops wey get levels. Providing the best small chops and drinks for your events and cravings.</p>
+            </div>
+            <div data-aos="fade-up" data-aos-delay="100">
+                <h4 class="font-heading text-lg mb-4">Contact Us</h4>
+                <ul class="space-y-2 text-gray-400">
+                    <li class="flex items-center gap-2"><span>📞</span> 08021207550</li>
+                    <li class="flex items-center gap-2"><span>💬</span> WhatsApp: 08053384458</li>
+                    <li class="flex items-center gap-2"><span>📸</span> @Osaschops</li>
+                </ul>
+            </div>
+            <div data-aos="fade-up" data-aos-delay="200">
+                <h4 class="font-heading text-lg mb-4">Newsletter</h4>
+                <div class="join w-full">
+                    <input class="input input-bordered join-item w-full bg-soft-black border-none text-white focus:ring-1 focus:ring-primary" placeholder="Email Address"/>
+                    <button class="btn btn-primary join-item text-soft-black font-bold">Join</button>
+                </div>
+            </div>
+        </div>
+        <div class="border-t border-white/10 mt-16 pt-8 text-center text-sm text-gray-500">
+            <p>&copy; 2026 Osaschops. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true, easing: 'ease-out-quad' });
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            header.classList.toggle('shadow-soft', window.scrollY > 50);
+        });
+
+        // Toast Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const toasts = document.querySelectorAll('.message-toast');
+            toasts.forEach((toast) => {
+                setTimeout(() => toast.classList.remove('translate-x-full', 'opacity-0'), 100);
+                setTimeout(() => {
+                    toast.classList.add('translate-x-full', 'opacity-0');
+                    setTimeout(() => toast.remove(), 500);
+                }, 5000);
+            });
+        });
+
+        const drawer = document.getElementById('cart-drawer');
+    const overlay = document.getElementById('drawer-overlay');
+    const content = document.getElementById('drawer-content');
+
+    function toggleDrawer(open) {
+        if (open) {
+            drawer.classList.remove('invisible');
+            setTimeout(() => {
+                overlay.classList.add('opacity-100');
+                content.classList.remove('translate-x-full');
+            }, 10);
+            renderDrawerItems(); // Refresh items whenever drawer opens
+        } else {
+            overlay.classList.remove('opacity-100');
+            content.classList.add('translate-x-full');
+            setTimeout(() => {
+                drawer.classList.add('invisible');
+            }, 300);
+        }
+    }
+
+    // Close on overlay click
+    overlay.addEventListener('click', () => toggleDrawer(false));
+
+    // Update your existing updateCart function to trigger the drawer
+    async function updateCart(itemId, action) {
+        // ... your existing AJAX fetch logic here ...
+        
+        // After a successful 'add' action:
+        if (action === 'add') {
+            toggleDrawer(true);
+        }
+    }
+
+    function renderDrawerItems() {
+        const listContainer = document.getElementById('drawer-items-list');
+        // In a real app, you'd fetch this from your Django API
+        // This is a placeholder of how you'd inject the HTML
+        /*
+        listContainer.innerHTML = cartData.map(item => `
+            <div class="flex items-center gap-4 bg-base-100 p-3 rounded-2xl border border-cream/50">
+                <img src="${item.img}" class="w-16 h-16 rounded-xl object-cover">
+                <div class="flex-grow">
+                    <h4 class="font-bold text-sm uppercase leading-tight">${item.name}</h4>
+                    <p class="text-primary font-black text-sm">₦${item.price}</p>
+                </div>
+                <div class="flex items-center bg-base-200 rounded-full px-2 py-1">
+                <span class="font-bold text-xs">x${item.qty}</span>
+                </div>
+            </div>
+        `).join('');
+        */
+    }
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

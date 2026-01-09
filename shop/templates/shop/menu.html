@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<section class="bg-base-200/50 min-h-screen pb-20">
+    <div class="bg-white pt-10 pb-6 border-b border-cream">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-heading font-black uppercase italic tracking-tighter mb-6">
+                Our <span class="text-primary">Menu</span>
+            </h1>
+
+            <div role="tablist" class="tabs tabs-box bg-base-200 p-1 rounded-2xl overflow-x-auto flex-nowrap no-scrollbar">
+                <a role="tab" class="tab tab-active font-bold uppercase text-xs tracking-widest px-8 transition-all">All</a>
+                <a role="tab" class="tab font-bold uppercase text-xs tracking-widest px-8 transition-all">Small Chops</a>
+                <a role="tab" class="tab font-bold uppercase text-xs tracking-widest px-8 transition-all">Platters</a>
+                <a role="tab" class="tab font-bold uppercase text-xs tracking-widest px-8 transition-all">Drinks</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            {% for item in menu_items %}
+            <div class="flex bg-white rounded-3xl shadow-card overflow-hidden hover:shadow-heavy transition-all duration-300 group" data-aos="fade-up">
+                
+                <div class="flex-1 p-5 md:p-8 flex flex-col justify-between">
+                    <div>
+                        <h3 class="text-lg md:text-xl font-heading font-bold text-charcoal leading-tight mb-2 group-hover:text-primary transition-colors">
+                            {{ item.name }}
+                        </h3>
+                        <p class="text-gray-500 text-sm font-medium leading-relaxed line-clamp-2 mb-4">
+                            {{ item.description }}
+                        </p>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <span class="text-xl font-black text-charcoal tracking-tight">
+                            ₦{{ item.price }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="w-2/5 md:w-1/3 relative p-3">
+                    <div class="w-full h-full rounded-2xl overflow-hidden relative bg-base-200">
+                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        
+                        <div class="absolute bottom-0 right-0 overflow-hidden rounded-tl-2xl shadow-lg" id="btn-container-{{ item.id }}">
+                            
+                            <button onclick="updateCart('{{ item.id }}', 'add')" 
+                                    id="add-btn-{{ item.id }}"
+                                    class="w-12 h-12 bg-charcoal text-white flex items-center justify-center hover:bg-primary hover:text-soft-black transition-all active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+                                </svg>
+                            </button>
+
+                            <div id="qty-ctrl-{{ item.id }}" 
+                                class="hidden flex items-center bg-primary text-soft-black h-12 transition-all duration-300">
+                                <button onclick="updateCart('{{ item.id }}', 'decrease')" class="px-3 h-full hover:bg-primary-dark transition-colors font-black text-lg">−</button>
+                                <span id="qty-val-{{ item.id }}" class="px-2 font-black min-w-[20px] text-center">1</span>
+                                <button onclick="updateCart('{{ item.id }}', 'increase')" class="px-3 h-full hover:bg-primary-dark transition-colors font-black text-lg">+</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div class="flex bg-white rounded-3xl shadow-card overflow-hidden hover:shadow-heavy transition-all duration-300 group relative" 
+                id="product-card-{{ item.id }}"
+                data-aos="fade-up">
+                
+                
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function addToCart(itemId) {
+        // Here you would normally have an AJAX call to Django
+        console.log("Added item " + itemId + " to bag");
+        
+        // This triggers the Django Message logic we built in the base
+        // In a real app, you'd use Vanilla JS to inject a new toast here.
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends 'vendor_base.html' %}
+{% load static %}
+
+{% block vendor_content %}
+<div class="max-w-5xl mx-auto space-y-10">
+    <div data-aos="fade-down">
+        <h1 class="text-3xl font-heading font-black uppercase italic tracking-tighter">
+            Store <span class="text-primary">Settings</span>
+        </h1>
+        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Configure your logistics & business levels</p>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" class="space-y-8">
+        {% csrf_token %}
+
+        <div class="bg-white rounded-[2.5rem] shadow-soft border border-cream overflow-hidden" data-aos="fade-up">
+            <div class="p-8 border-b border-cream bg-base-200/30">
+                <h3 class="font-heading font-black uppercase italic text-lg tracking-tighter">Weekly <span class="text-primary">Schedule</span></h3>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Set your active frying hours for each day</p>
+            </div>
+            
+            <div class="p-8 space-y-4">
+                <div class="hidden md:grid grid-cols-12 gap-4 px-4 pb-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <div class="col-span-3">Day</div>
+                    <div class="col-span-3">Status</div>
+                    <div class="col-span-3">Open Time</div>
+                    <div class="col-span-3">Close Time</div>
+                </div>
+
+                {% comment %} {% flex "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" as days %} {% endcomment %}
+                {% for day in "days" %}
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-base-200/30 p-4 rounded-2xl border border-transparent hover:border-cream transition-all group">
+                    <div class="col-span-3 font-black text-charcoal uppercase text-sm italic">
+                        {{ day }}
+                    </div>
+
+                    <div class="col-span-3">
+                        <label class="label cursor-pointer justify-start gap-3 p-0">
+                            <input type="checkbox" name="{{ day|lower }}_open" class="toggle toggle-primary toggle-sm day-toggle" checked onchange="toggleTimeInputs(this)">
+                            <span class="label-text font-bold uppercase text-[10px] status-label">Open</span>
+                        </label>
+                    </div>
+
+                    <div class="col-span-3">
+                        <input type="time" name="{{ day|lower }}_start" value="09:00" class="input input-sm w-full rounded-lg border-cream font-bold text-xs focus:ring-1 focus:ring-primary time-input">
+                    </div>
+                    <div class="col-span-3">
+                        <input type="time" name="{{ day|lower }}_end" value="21:00" class="input input-sm w-full rounded-lg border-cream font-bold text-xs focus:ring-1 focus:ring-primary time-input">
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        </div> <div class="bg-white rounded-[2.5rem] shadow-soft border border-cream overflow-hidden" data-aos="fade-up">
+            <div class="p-8 border-b border-cream">
+                <h3 class="font-heading font-black uppercase italic text-lg tracking-tighter">Hero <span class="text-primary">Branding</span></h3>
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Control the main banner text and imagery</p>
+            </div>
+            <div class="p-8 space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Promo Badge</span></label>
+                        <input type="text" name="hero_badge" value="{{ store.hero_badge }}" class="input input-bordered rounded-xl bg-base-200 border-none font-bold">
+                    </div>
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Main Title</span></label>
+                        <input type="text" name="hero_title" value="{{ store.hero_title }}" class="input input-bordered rounded-xl bg-base-200 border-none font-bold">
+                    </div>
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Hero Subtitle</span></label>
+                    <textarea name="hero_subtitle" class="textarea textarea-bordered rounded-xl bg-base-200 border-none font-medium h-24">{{ store.hero_subtitle }}</textarea>
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Hero Image</span></label>
+                    {% if store.hero_image %}
+                        <div class="mb-2">
+                            <img src="{{ store.hero_image.url }}" class="w-32 h-20 object-cover rounded-lg border border-cream shadow-sm">
+                        </div>
+                    {% endif %}
+                    <input type="file" name="hero_image" class="file-input file-input-bordered file-input-primary w-full rounded-xl bg-base-200 border-none" />
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] shadow-soft border border-cream overflow-hidden">
+            <div class="p-8 border-b border-cream">
+                <h3 class="font-heading font-black uppercase italic text-lg tracking-tighter">Delivery <span class="text-primary">Zones</span></h3>
+            </div>
+            <div class="p-8 space-y-4">
+                <div class="grid grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl">
+                    <div class="col-span-6 font-bold text-sm uppercase">Lekki Phase 1 & 2</div>
+                    <div class="col-span-4">
+                        <input type="text" value="₦2,500" class="input input-sm w-full rounded-lg border-cream font-black text-primary">
+                    </div>
+                    <div class="col-span-2 text-right">
+                        <button class="btn btn-ghost btn-circle btn-sm text-error">✕</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl">
+                    <div class="col-span-6 font-bold text-sm uppercase">Ikeja / Magodo</div>
+                    <div class="col-span-4">
+                        <input type="text" value="₦4,500" class="input input-sm w-full rounded-lg border-cream font-black text-primary">
+                    </div>
+                    <div class="col-span-2 text-right">
+                        <button class="btn btn-ghost btn-circle btn-sm text-error">✕</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm text-primary font-black uppercase text-[10px]">+ Add New Zone</button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] shadow-soft border border-cream overflow-hidden">
+            <div class="p-8 border-b border-cream">
+                <h3 class="font-heading font-black uppercase italic text-lg tracking-tighter text-charcoal">Integration <span class="text-primary">Hub</span></h3>
+            </div>
+            <div class="p-8 space-y-6">
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-black uppercase text-[10px] tracking-widest">Order Notification WhatsApp</span></label>
+                    <div class="flex gap-2">
+                        <span class="bg-base-200 px-4 flex items-center rounded-xl font-bold text-gray-500">+234</span>
+                        <input type="tel" value="8053384458" class="input input-bordered grow rounded-xl bg-base-200 border-none font-bold">
+                    </div>
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-black uppercase text-[10px] tracking-widest">Automated Customer Message</span></label>
+                    <textarea class="textarea textarea-bordered rounded-xl bg-base-200 border-none font-medium h-24">Hi! Your Osaschops levels are being prepped. Order #ID is currently in the fryer! 🍗</textarea>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end pt-4 pb-12">
+            <button type="submit" class="btn btn-primary px-12 rounded-full font-black uppercase italic shadow-lg shadow-orange-500/20 hover:scale-105 transition-transform">
+                Save All Changes
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleTimeInputs(checkbox) {
+    // Find the row container
+    const row = checkbox.closest('.grid');
+    const timeInputs = row.querySelectorAll('.time-input');
+    const statusLabel = row.querySelector('.status-label');
+    
+    if (checkbox.checked) {
+        // Enable inputs
+        timeInputs.forEach(input => {
+            input.disabled = false;
+            input.classList.remove('opacity-30', 'grayscale');
+        });
+        statusLabel.innerText = 'Open';
+        statusLabel.classList.add('text-primary');
+        statusLabel.classList.remove('text-gray-400');
+    } else {
+        // Disable inputs
+        timeInputs.forEach(input => {
+            input.disabled = true;
+            input.classList.add('opacity-30', 'grayscale');
+        });
+        statusLabel.innerText = 'Closed';
+        statusLabel.classList.remove('text-primary');
+        statusLabel.classList.add('text-gray-400');
+    }
+}
+
+// Run on page load to set initial states
+document.querySelectorAll('.day-toggle').forEach(toggle => toggleTimeInputs(toggle));
+</script>
+{% endblock %}

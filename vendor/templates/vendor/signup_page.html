@@ -1,0 +1,25 @@
+<div class="bg-white rounded-[3rem] p-10 shadow-2xl grid md:grid-cols-2 gap-10 max-w-4xl w-full">
+    <div class="space-y-6">
+        <h2 class="text-3xl font-black uppercase italic tracking-tighter">Join the <span class="text-primary">Levels</span></h2>
+        <p class="text-sm text-gray-500">Create a staff account to manage live orders and kitchen logistics.</p>
+        
+        <div class="space-y-4 pt-4">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 rounded-full bg-cream flex items-center justify-center text-primary font-bold">✓</div>
+                <p class="text-xs font-bold uppercase text-gray-600">Live Order Tracking</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 rounded-full bg-cream flex items-center justify-center text-primary font-bold">✓</div>
+                <p class="text-xs font-bold uppercase text-gray-600">Menu Management</p>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST" class="space-y-4">
+        {% csrf_token %}
+        <input type="text" name="full_name" placeholder="Full Name" class="input input-bordered w-full rounded-xl bg-base-200 border-none">
+        <input type="email" name="email" placeholder="Email Address" class="input input-bordered w-full rounded-xl bg-base-200 border-none">
+        <input type="password" name="password" placeholder="Create Password" class="input input-bordered w-full rounded-xl bg-base-200 border-none">
+        <button class="btn btn-primary w-full rounded-full font-black uppercase italic">Request Access</button>
+    </form>
+</div>
