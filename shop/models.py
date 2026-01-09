@@ -60,8 +60,8 @@ class OrderItem(models.Model):
 class EventInquiry(models.Model):
     STATUS = [('new', 'New'), ('contacted', 'Contacted'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')]
     
-    client_name = models.CharField(max_length=200)
-    client_phone = models.CharField(max_length=20)
+    name = models.CharField(max_length=200)
+    phone = models.CharField(max_length=20)
     event_type = models.CharField(max_length=100) # Wedding, Party, etc.
     event_date = models.DateField()
     guest_count = models.PositiveIntegerField()

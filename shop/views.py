@@ -1,15 +1,18 @@
 from django.shortcuts import render
-from django.views.generic import View
+from django.views.generic import View, FormView
 from django.db import Count
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 
 from vendor.models import StoreSetting
 from . models import Category, Product
-
+from cart.cart import Cart
+from .forms import BulkOrderForm
 
 class HomePageView(View):
     def get(self, request):
         store = StoreSetting.objects.get(name="Osaschops")
-        categories = Category.objects.all().count()
+        categories = Category.objects.all()
         products =Product.objects.all().annotate(best_sellers=Count("order_items")).order_by("best_sellers")
 
         context ={
@@ -18,3 +21,57 @@ class HomePageView(View):
             "products":products,
         }
         return render(request, "shop/home_page.html", context)
+    
+class MenuView(View):
+    def get(self, request):
+        category = request.GET.get("category")
+
+        products = Product.objects.all()
+
+        if category:
+            products = products.filter(category__slug=category)
+
+        categories = Category.objects.all()
+
+        context = {
+            "categories":categories,
+            "products":products,
+        }
+
+        return render(request, "shop/menu.html", context)
+    
+    def post(self, request):
+        """AJAX add-to-cart and re-render product list WITH ACTIVE FILTERS & PAGINATION"""
+        cart = Cart(request)
+
+        category = request.GET.get("category")
+
+        products = Product.objects.all()
+
+        if category:
+            products = products.filter(category__slug=category)
+
+        product_id = request.POST.get("product_id")
+        cart.add_product(product_id=product_id)
+
+        html = render_to_string(
+            "shop/includes/menu_card.html",
+            {
+                "products": products,
+                "cart": cart,
+                "filters": request.GET,
+            },
+            request=request
+        )
+
+        return JsonResponse({"html": html, "status": True, "cart":len(cart)})
+    
+class BulkOrderView(FormView):
+    form_class = BulkOrderForm
+    template_name ="shop/bulk_order_page"
+    success_url = ""
+
+    def form_valid(self, form):
+        # set django message
+        form.save()
+        return super().form_valid(form)
