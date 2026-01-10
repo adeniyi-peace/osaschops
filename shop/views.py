@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import View, FormView
+from django.views.generic import View, FormView, TemplateView
 from django.db import Count
 from django.http import JsonResponse
 from django.template.loader import render_to_string
@@ -75,3 +75,6 @@ class BulkOrderView(FormView):
         # set django message
         form.save()
         return super().form_valid(form)
+
+class AboutUsPage(TemplateView):
+    template_name="shop/about_us_page"

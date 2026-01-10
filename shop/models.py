@@ -38,9 +38,9 @@ class Order(models.Model):
         ('delivered', 'Delivered'),
     ]
 
-    customer_name = models.CharField(max_length=200)
-    customer_email = models.EmailField()
-    customer_phone = models.CharField(max_length=20)
+    name = models.CharField(max_length=200)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
     address = models.TextField()
     delivery_zone = models.ForeignKey("vendor.DeliveryZone", on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -49,7 +49,8 @@ class Order(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Order #{self.id} - {self.customer_name}"
+        return f"Order #{self.id} - {self.name}"
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)

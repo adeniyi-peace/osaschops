@@ -15,9 +15,11 @@ class Cart(object):
 
     
     def __iter__(self):
-        for p_id_str, item_data in self.cart.items():
-            p_id = int(p_id_str)
-            product = Product.objects.get(pk=p_id)
+        product_ids = self.cart.keys()
+        products = Product.objects.filter(id__in=product_ids)
+        
+        for product in products:
+            item_data = self.cart[str(product.id)]
 
             item = item_data.copy()
             item["product"] = product

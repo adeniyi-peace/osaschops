@@ -7,6 +7,7 @@ bulk_order_input_class = "input input-bordered rounded-xl bg-base-200 border-non
 
 class BulkOrderForm(forms.ModelForm):
     package_choice = forms.ModelMultipleChoiceField(
+        empty_label="Select Package",
         queryset=Product.object.all(),
         widget= forms.SelectMultiple(attrs={
             "class":"select select-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary font-bold",

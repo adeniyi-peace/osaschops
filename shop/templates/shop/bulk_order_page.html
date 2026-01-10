@@ -52,43 +52,45 @@
                     <div class="grid md:grid-cols-2 gap-4">
                         <div class="form-control">
                             <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Full Name</span></label>
-                            <input type="text" name="client_name" placeholder="Enter name" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                            {{form.name}}
+                            {% if form.name.errors %}<div class="text-red-500">{{ form.name.errors }}</div> {% endif %}
                         </div>
                         <div class="form-control">
                             <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Phone Number</span></label>
-                            <input type="tel" name="client_phone" placeholder="080..." class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                            {{form.phone}}
+                            {% if form.phone.errors %}<div class="text-red-500">{{ form.phone.error }}</div> {% endif %}
                         </div>
                     </div>
 
                     <div class="grid md:grid-cols-2 gap-4">
                         <div class="form-control">
                             <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Event Date</span></label>
-                            <input type="date" name="event_date" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                            {{form.event_date}}
+                            {% if form.event_date.errors %}<div class="text-red-500">{{ form.event_date.errors }}</div> {% endif %}
                         </div>
                         <div class="form-control">
                             <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Guest Count (Est.)</span></label>
-                            <input type="number" name="guest_count" placeholder="e.g. 100" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                            {{form.guest_count}}
+                            {% if form.guest_count.errors %}<div class="text-red-500">{{ form.guest_count.errors }}</div> {% endif %}
                         </div>
                     </div>
 
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Event Location</span></label>
-                        <input type="text" name="location" placeholder="e.g. Victoria Island, Lagos" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                        {{form.location}}
+                        {% if form.location.errors %}<div class="text-red-500">{{ form.location.errors }}</div> {% endif %}
                     </div>
 
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Package Choice</span></label>
-                        <select name="package" class="select select-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary font-bold">
-                            <option disabled selected>Select Package</option>
-                            <option>Premium Small Chops Platter</option>
-                            <option>Executive Corporate Box</option>
-                            <option>Custom Mix (Buffet Style)</option>
-                        </select>
+                        {{form.package_choice}}
+                        {% if form.package_choice.errors %}<div class="text-red-500">{{ form.package_choice.errors }}</div> {% endif %}
                     </div>
 
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Additional Notes</span></label>
-                        <textarea name="notes" rows="3" class="textarea textarea-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary" placeholder="Specific allergies, dietary needs, or event schedule..."></textarea>
+                        {{form.notes}}
+                        {% if form.notes.errors %}<div class="text-red-500">{{ form.notes.errors }}</div> {% endif %}
                     </div>
 
                     <button type="submit" class="btn btn-primary w-full rounded-full btn-lg font-black uppercase italic shadow-lg shadow-orange-500/20 mt-4">
