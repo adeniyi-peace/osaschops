@@ -1,0 +1,35 @@
+<div class="modal-box bg-white rounded-[2.5rem] p-8 max-w-md border border-error/20 shadow-2xl">
+    <div class="text-center space-y-4">
+        <div class="mx-auto w-16 h-16 bg-error/10 rounded-full flex items-center justify-center mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+        </div>
+
+        <h3 class="font-heading font-black uppercase italic text-2xl text-charcoal">
+            Delete <span class="text-error">Item?</span>
+        </h3>
+        
+        <div class="bg-base-200/50 p-4 rounded-2xl flex items-center gap-4 text-left">
+            <img src="{{ item.image.url }}" class="w-12 h-12 rounded-xl object-cover">
+            <div>
+                <p class="font-black text-charcoal uppercase text-sm">{{ item.name }}</p>
+                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{{ item.category.name }}</p>
+            </div>
+        </div>
+
+        <p class="text-xs font-bold text-gray-500 leading-relaxed px-4">
+            Are you sure? This action will remove this item from your menu permanently. This cannot be undone.
+        </p>
+    </div>
+
+    <form method="POST" action="{% url 'delete-item' item.pk %}" class="modal-action flex justify-center gap-3 mt-8">
+        {% csrf_token %}
+        <button type="button" onclick="delete_modal.close()" class="btn btn-ghost rounded-2xl font-bold uppercase text-xs grow">
+            Keep it
+        </button>
+        <button type="submit" class="btn btn-error rounded-2xl font-black uppercase italic text-white grow shadow-lg shadow-error/20">
+            Yes, Delete
+        </button>
+    </form>
+</div>

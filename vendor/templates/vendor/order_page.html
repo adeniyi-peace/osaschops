@@ -31,7 +31,7 @@
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
     
     {% for order in active_orders %}
-    <div class="card bg-white shadow-heavy rounded-[2.5rem] border-2 border-cream overflow-hidden flex flex-col h-[500px]" id="order-card-{{ order.id }}">
+    <div class="card bg-white shadow-heavy rounded-[2.5rem] border-2 border-cream overflow-hidden flex flex-col h-125" id="order-card-{{ order.id }}">
         
         <div class="p-6 bg-base-200 flex justify-between items-start border-b-2 border-dashed border-cream">
             <div>
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="flex-grow p-6 overflow-y-auto custom-scrollbar space-y-4">
+        <div class="grow p-6 overflow-y-auto custom-scrollbar space-y-4">
             {% for item in order.items.all %}
             <div class="flex justify-between items-start">
                 <div class="flex gap-3">

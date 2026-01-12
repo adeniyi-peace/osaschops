@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import View, FormView, TemplateView
-from django.db import Count
+from django.db.models import Count
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 

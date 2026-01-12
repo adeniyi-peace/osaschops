@@ -4,31 +4,33 @@
 {% block vendor_content %}
 <div class="space-y-10">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" data-aos="fade-down">
-        <div class="stat bg-white rounded-[2rem] shadow-soft border border-cream p-8 group hover:border-primary transition-all">
+        <div class="stat bg-white rounded-4xl shadow-soft border border-cream p-8 group hover:border-primary transition-all">
             <div class="stat-figure text-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
             <div class="stat-title font-bold uppercase text-[10px] tracking-widest text-gray-500">Today's Revenue</div>
-            <div class="stat-value text-charcoal font-black tracking-tighter">₦142,500</div>
-            <div class="stat-desc font-bold text-success mt-1">↗︎ 14% more than yesterday</div>
+            <div class="stat-value text-charcoal font-black tracking-tighter">₦{{today_revenue}}</div>
+            <div class="stat-desc font-bold text-success mt-1">{{current_revenue}}</div>
         </div>
         
-        <div class="stat bg-white rounded-[2rem] shadow-soft border border-cream p-8 group hover:border-primary transition-all">
+        <div class="stat bg-white rounded-4xl shadow-soft border border-cream p-8 group hover:border-primary transition-all">
             <div class="stat-figure text-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-8 h-8 stroke-current"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path></svg>
             </div>
             <div class="stat-title font-bold uppercase text-[10px] tracking-widest text-gray-500">Pending Orders</div>
-            <div class="stat-value text-primary font-black tracking-tighter">12</div>
+            <div class="stat-value text-primary font-black tracking-tighter">{{pending_orders.count}}</div>
+            {% if pending_orders.count > 0 %}
             <div class="stat-desc font-bold text-error mt-1 italic uppercase text-[10px]">Action Required</div>
+            {% endif %}
         </div>
 
-        <div class="stat bg-white rounded-[2rem] shadow-soft border border-cream p-8 group hover:border-primary transition-all">
+        <div class="stat bg-white rounded-4xl shadow-soft border border-cream p-8 group hover:border-primary transition-all">
             <div class="stat-title font-bold uppercase text-[10px] tracking-widest text-gray-500">Avg. Prep Time</div>
             <div class="stat-value text-charcoal font-black tracking-tighter">24m</div>
             <div class="stat-desc font-bold text-gray-400 mt-1 italic uppercase text-[10px]">Target: 20m</div>
         </div>
 
-        <div class="stat bg-white rounded-[2rem] shadow-soft border border-cream p-8 group hover:border-primary transition-all">
+        <div class="stat bg-white rounded-4xl shadow-soft border border-cream p-8 group hover:border-primary transition-all">
             <div class="stat-title font-bold uppercase text-[10px] tracking-widest text-gray-500">Order Accuracy</div>
             <div class="stat-value text-success font-black tracking-tighter">98%</div>
             <div class="stat-desc font-bold text-gray-400 mt-1 italic uppercase text-[10px]">Last 7 days</div>
@@ -44,24 +46,24 @@
 
             <div class="space-y-4">
                 {% for order in recent_orders %}
-                <div class="flex items-center bg-white p-5 rounded-[1.5rem] shadow-soft border-l-8 border-primary group hover:bg-cream/10 transition-colors">
-                    <div class="flex-grow">
+                <div class="flex items-center bg-white p-5 rounded-3xl shadow-soft border-l-8 border-primary group hover:bg-cream/10 transition-colors">
+                    <div class="grow">
                         <div class="flex items-center gap-3 mb-1">
                             <span class="font-black text-charcoal text-lg">#{{ order.id }}</span>
-                            <span class="badge badge-outline text-[10px] font-bold uppercase">{{ order.payment_method }}</span>
+                            <span class="badge badge-outline text-[10px] font-bold uppercase">{{ order.payment_ref }}</span>
                         </div>
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">{{ order.items_count }} Items • {{ order.customer_name }}</p>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">{{ order.items.all.count }} Items • {{ order.name }}</p>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="text-right hidden md:block">
                             <p class="text-xs font-black uppercase text-charcoal">₦{{ order.total }}</p>
-                            <p class="text-[10px] font-medium text-gray-400">2 mins ago</p>
+                            <p class="text-[10px] font-medium text-gray-400">{{order.created_at}}</p>
                         </div>
                         <button class="btn btn-primary btn-sm rounded-full font-black uppercase italic text-[10px]">Start Prepping</button>
                     </div>
                 </div>
                 {% empty %}
-                <div class="text-center py-10 bg-white rounded-[2rem] border border-dashed border-cream">
+                <div class="text-center py-10 bg-white rounded-4xl border border-dashed border-cream">
                     <p class="text-gray-400 font-bold uppercase text-xs tracking-widest">No active orders right now.</p>
                 </div>
                 {% endfor %}
@@ -81,13 +83,15 @@
             <div class="bg-white p-8 rounded-[2.5rem] shadow-soft border border-cream">
                 <h4 class="font-heading font-black uppercase italic text-lg mb-6 tracking-tighter text-charcoal">Top <span class="text-primary">Chops</span></h4>
                 <div class="space-y-4">
+                    {% for chop in top_chops %}
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-3">
                             <span class="w-8 h-8 rounded-lg bg-cream flex items-center justify-center text-sm">🥟</span>
-                            <span class="text-sm font-bold text-charcoal">Beef Samosa</span>
+                            <span class="text-sm font-bold text-charcoal">{{cops.name}}</span>
                         </div>
-                        <span class="badge badge-ghost font-black">124</span>
+                        <span class="badge badge-ghost font-black">{{chops.best_seller}}</span>
                     </div>
+                    {% endfor %}
                     <div class="flex justify-between items-center">
                         <div class="flex items-center gap-3">
                             <span class="w-8 h-8 rounded-lg bg-cream flex items-center justify-center text-sm">🍗</span>

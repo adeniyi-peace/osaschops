@@ -1,0 +1,36 @@
+<div class="modal-box bg-white rounded-[2.5rem] p-8 max-w-2xl border border-cream">
+    <form method="POST" action="{% if form.instance.pk %}{% url 'edit-item' form.instance.pk %}{% else %}{% url 'add-item' %}{% endif %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <h3 class="font-heading font-black uppercase italic text-2xl mb-6">
+            {% if form.instance.pk %}Edit <span class="text-primary">Chops</span>{% else %}Add New <span class="text-primary">Chops</span>{% endif %}
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="form-control col-span-2 md:col-span-1">
+                <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Item Name</span></label>
+                {{ form.name }}
+            </div>
+            <div class="form-control col-span-2 md:col-span-1">
+                <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Category</span></label>
+                {{ form.category }}
+            </div>
+            <div class="form-control">
+                <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Price (₦)</span></label>
+                {{ form.price }}
+            </div>
+            <div class="form-control">
+                <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Image</span></label>
+                {{ form.image }}
+            </div>
+            <div class="form-control col-span-2">
+                <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Description</span></label>
+                {{ form.description }}
+            </div>
+        </div>
+
+        <div class="modal-action gap-2">
+            <button type="button" onclick="form_modal.close()" class="btn btn-ghost rounded-2xl font-bold uppercase text-xs">Cancel</button>
+            <button type="submit" class="btn btn-primary rounded-2xl px-8 font-black uppercase italic">Save Levels</button>
+        </div>
+    </form>
+</div>

@@ -48,6 +48,9 @@ class Order(models.Model):
     payment_ref = models.CharField(max_length=100, blank=True) # For Paystack
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = "-created_at"
+
     def __str__(self):
         return f"Order #{self.id} - {self.name}"
 

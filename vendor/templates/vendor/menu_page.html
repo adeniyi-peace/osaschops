@@ -11,11 +11,13 @@
             <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Manage your chops & stock levels</p>
         </div>
         <div class="flex gap-2 w-full md:w-auto">
-            <div class="relative flex-grow">
-                <input type="text" placeholder="Search chops..." class="input input-bordered w-full rounded-2xl bg-white border-cream pl-10 focus:ring-primary">
+            <form method="GET" class="relative grow">
+                <input type="text" name="search" value="{{ request.GET.search|default:'' }}" 
+                        placeholder="Search chops..." 
+                        class="input input-bordered w-full rounded-2xl bg-white border-cream pl-10 focus:ring-primary">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute left-3 top-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-            </div>
-            <button class="btn btn-primary rounded-2xl font-black uppercase italic">+ Add Item</button>
+            </form>
+            <button type="button" class="btn btn-primary rounded-2xl font-black uppercase italic">+ Add Item</button>
         </div>
     </div>
 
@@ -75,16 +77,33 @@
         </table>
     </div>
 </div>
+
+<dialog id="form_modal" class="modal">
+    <div id="modal_content_container">
+        {% include 'partials/product_form.html' with form=empty_form %}
+    </div>
+</dialog>
+
+<dialog id="delete_modal" class="modal">
+    <div id="delete_content_container"></div>
+</dialog>
+
+<template id="loader_template">
+    <div class="modal-box bg-white rounded-[2.5rem] p-12 flex flex-col items-center justify-center border border-cream">
+        <span class="loading loading-spinner loading-lg text-primary"></span>
+        <p class="mt-4 font-black uppercase italic text-xs tracking-widest text-gray-400">Loading Chops...</p>
+    </div>
+</template>
 {% endblock %}
 
 {% block extra_js %}
 <script>
     function toggleAvailability(itemId, isChecked) {
-        // Find the text label to update it immediately (Optimistic UI)
-        const label = event.target.previousElementSibling;
+        const label = event.target.closest('label').querySelector('.label-text');
+
+        // Optimistic UI Update
         label.innerText = isChecked ? 'Available' : 'Unavailable';
-        label.classList.toggle('text-primary', isChecked);
-        label.classList.toggle('text-gray-400', !isChecked);
+        label.className = `label-text font-bold text-[10px] uppercase ${isChecked ? 'text-primary' : 'text-gray-400'}`;
 
         fetch(`/vendor/menu/${itemId}/toggle-availability/`, {
             method: 'POST',
@@ -94,14 +113,61 @@
             },
             body: JSON.stringify({ available: isChecked })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (!data.success) {
-                // Revert if there's an error
-                alert("Failed to update status. Please try again.");
-                location.reload();
-            }
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .catch(error => {
+            alert("Failed to update status. Please try again.");
+            location.reload(); // Revert on failure
         });
+    }
+
+    async function openFormModal(productId = null) {
+        const container = document.getElementById('modal_content_container');
+        const loader = document.getElementById('loader_template').innerHTML;
+        const modal = document.getElementById('form_modal');
+
+        // 1. Show loader and open modal
+        container.innerHTML = loader;
+        modal.showModal();
+
+        // 2. Build URL (If ID exists, it's Edit; else it's Add)
+        const url = productId ? `/vendor/menu/form/${productId}/` : `/vendor/menu/form/`;
+
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            
+            // 3. Inject the partial
+            container.innerHTML = html;
+        } catch (error) {
+            container.innerHTML = `<div class="modal-box">Error loading form.</div>`;
+        }
+    }
+
+    async function openDeleteModal(productId) {
+        const container = document.getElementById('delete_content_container');
+        const loader = document.getElementById('loader_template').innerHTML;
+        const modal = document.getElementById('delete_modal');
+
+        container.innerHTML = loader;
+        modal.showModal();
+
+        try {
+            // Fetch the delete confirmation partial from Django
+            const response = await fetch(`/vendor/menu/delete-partial/${productId}/`);
+            if (!response.ok) throw new Error('Failed to fetch');
+            
+            const html = await response.text();
+            container.innerHTML = html;
+        } catch (error) {
+            container.innerHTML = `
+                <div class="modal-box text-center">
+                    <p class="text-error font-bold">Failed to load content.</p>
+                    <button class="btn btn-sm mt-4" onclick="delete_modal.close()">Close</button>
+                </div>`;
+        }
     }
 </script>
 {% endblock %}
