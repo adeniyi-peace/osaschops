@@ -1,5 +1,5 @@
 <div class="modal-box bg-white rounded-[2.5rem] p-8 max-w-2xl border border-cream">
-    <form method="POST" action="{% if form.instance.pk %}{% url 'edit-item' form.instance.pk %}{% else %}{% url 'add-item' %}{% endif %}" enctype="multipart/form-data">
+    <form method="POST" action="{% if form.instance.pk %}{% url 'edit_menu' form.instance.pk %}{% else %}{% url 'add_menu' %}{% endif %}" enctype="multipart/form-data" onsubmit="handleSubmit">
         {% csrf_token %}
         <h3 class="font-heading font-black uppercase italic text-2xl mb-6">
             {% if form.instance.pk %}Edit <span class="text-primary">Chops</span>{% else %}Add New <span class="text-primary">Chops</span>{% endif %}

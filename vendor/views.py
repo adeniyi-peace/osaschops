@@ -170,7 +170,7 @@ class AddEditProductView(View):
             if form.is_valid():
                 form.save()
 
-                return redirect("...")
+                return JsonResponse({'success': True, })
 
         context = {
             "form":form
@@ -180,16 +180,19 @@ class AddEditProductView(View):
             'vendor/includes/product_form.html', context, request
         )
 
-        JsonResponse({'success': False, 'html': html}, status=400)
-        
-
-                
+        return JsonResponse({'success': False, 'html': html}, status=400)
+                        
 
 class ProductDeleteView(View):
     """View to return the delete confirmation partial"""
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
-        return render(request, 'partials/delete_confirm.html', {'item': product})
+        return render(request, 'vendor/includes/delete_confirm.html', {'item': product})
+    
+    def post(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        product.delete()
+        return redirect("vendor_menu")
 
 
 class SettingsView(View):
