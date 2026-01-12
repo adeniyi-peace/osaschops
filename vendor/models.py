@@ -4,8 +4,6 @@ from django.utils.text import slugify
 class StoreSetting(models.Model):
     name = models.CharField(max_length=100, default="Osaschops")
     whatsapp_number = models.CharField(max_length=20, help_text="Format: 2348053384458")
-    is_store_open = models.BooleanField(default=True, help_text="Global master switch")
-    base_delivery_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     hero_badge = models.CharField(max_length=50, default="✨ NEW MONTH, NEW LEVELS!")
     hero_title = models.CharField(max_length=200, default="Chops Wey Get Levels")

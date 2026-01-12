@@ -8,8 +8,8 @@ from django.http import JsonResponse
 from django.template.loader import render_to_string
 
 from shop.models import Order, OrderItem, Product, EventInquiry, Category
-from . models import BusinessDay
-from . forms import ProductForm
+from . models import BusinessDay, DeliveryZone, StoreSetting
+from . forms import ProductForm, BusinessDayFormSet, DeliveryZoneFormset, StoreSettingForm
 
 class DashboardView(View):
     def get(self, request):
@@ -163,9 +163,9 @@ class AddEditProductView(View):
     def post(self, request, pk=None):
         if pk:
             product = get_object_or_404(Product, pk=pk)
-            form = ProductForm(request.POST, request.DATA, instance=product)
+            form = ProductForm(request.POST, request.FILES, instance=product)
         else:
-            form = ProductForm(request.POST, request.DATA)
+            form = ProductForm(request.POST, request.FILES)
 
             if form.is_valid():
                 form.save()
@@ -185,8 +185,68 @@ class AddEditProductView(View):
 
                 
 
-class ProductDeletePartialView(View):
+class ProductDeleteView(View):
     """View to return the delete confirmation partial"""
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         return render(request, 'partials/delete_confirm.html', {'item': product})
+
+
+class SettingsView(View):
+    def get(self, request):
+        business_day = BusinessDay.models.all()
+        delivery_zone = DeliveryZone.objects.all()
+        store_settings = get_object_or_404(StoreSetting, name="Osaschops")
+        business_formset = BusinessDayFormSet(queryset=business_day)
+        delivery_formset = DeliveryZoneFormset(queryset=delivery_zone)
+        store_form = StoreSettingForm(instance=store_settings)
+
+        context = {
+            "business_formset":business_formset,
+            "delivery_formset":delivery_formset,
+            "store_form":store_form,
+            "store_settings":store_settings,
+        }
+
+        return render(request, "vendor/settings.html", context)
+
+    def post(self, request):
+        business_day = BusinessDay.models.all()
+        delivery_zone = DeliveryZone.objects.all()
+        store_settings = get_object_or_404(StoreSetting, name="Osaschops")
+        business_formset = BusinessDayFormSet(request.POST, request.FILES, queryset=business_day)
+        delivery_formset = DeliveryZoneFormset(request.POST, request.FILES, queryset=delivery_zone)
+        store_form = StoreSettingForm(request.POST, request.FILES, instance=store_settings)
+
+        if business_formset.is_valid() and delivery_formset.is_valid() and store_form.is_valid():
+            business_formset.save()
+            delivery_formset.save()
+            store_form.save()
+
+            return redirect("...")
+
+        context = {
+            "business_formset":business_formset,
+            "delivery_formset":delivery_formset,
+            "store_form":store_form,
+            "store_settings":store_settings,
+        }
+
+        return render(request, "vendor/settings.html", context)
+        
+
+class EventInquiryView(View):
+    def get(self, request):
+        query= EventInquiry.objects.all()
+        inquiries = query.filter(status__in=["new","contacted"])
+        new_inquires = query.filter(status="new").count()
+        confirmed_inquires = query.filter(status="confirmed").count()
+
+        context = {
+            "inquiries":inquiries,
+            "new_inquires":new_inquires,
+            "confirmed_inquires":confirmed_inquires,
+        }
+
+        return render(request, "vendor/event_inquiry_page.html", context)
+

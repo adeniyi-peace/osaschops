@@ -1,3 +1,16 @@
 from django.urls import path
 
 from . import views
+
+urlpatterns = [
+    path("", views.DashboardView.as_view(), name="dashboard"),
+    path("orders/", views.OrderView.as_view(), name="orders"),
+    path("sales-report/", views.SalesReportView.as_view(), name="sales_report"),
+    path("menu/", views.MenuListView.as_view(), name="vendor_menu"),
+    path("menu/add-menu/", views.AddEditProductView.as_view(), name="add_menu"),
+    path("menu/edit-menu/<int:pk>/", views.AddEditProductView.as_view(), name="edit_menu"),
+    path("menu/delete-menu/<int:pk>/", views.ProductDeleteView.as_view(), name="delete_menu"),
+    path("settings/", views.SettingsView.as_view(), name="settings"),
+    path("event-inquiry/", views.EventInquiryView.as_view(), name="vendor_event_inquiry")
+    
+]

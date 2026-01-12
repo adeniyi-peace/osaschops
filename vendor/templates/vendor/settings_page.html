@@ -20,6 +20,7 @@
             </div>
             
             <div class="p-8 space-y-4">
+                {{ business_formset.management_form }}
                 <div class="hidden md:grid grid-cols-12 gap-4 px-4 pb-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
                     <div class="col-span-3">Day</div>
                     <div class="col-span-3">Status</div>
@@ -27,25 +28,36 @@
                     <div class="col-span-3">Close Time</div>
                 </div>
 
-                {% comment %} {% flex "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" as days %} {% endcomment %}
-                {% for day in "days" %}
+                {% for forms in business_formset %}
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-base-200/30 p-4 rounded-2xl border border-transparent hover:border-cream transition-all group">
+                    {{ form.id }} 
                     <div class="col-span-3 font-black text-charcoal uppercase text-sm italic">
-                        {{ day }}
+                        {{ form.day.label }}
+                        {{ form.day}}
                     </div>
 
                     <div class="col-span-3">
                         <label class="label cursor-pointer justify-start gap-3 p-0">
-                            <input type="checkbox" name="{{ day|lower }}_open" class="toggle toggle-primary toggle-sm day-toggle" checked onchange="toggleTimeInputs(this)">
-                            <span class="label-text font-bold uppercase text-[10px] status-label">Open</span>
+                            <!-- <input type="checkbox" name="{{ day|lower }}_open" class="toggle toggle-primary toggle-sm day-toggle" checked onchange="toggleTimeInputs(this)"> -->
+                             {{ form.is_open }} 
+                            <span class="label-text font-bold uppercase text-[10px] status-label">{% if form.instance.is_open %}Open{% else %}Closed{% endif %}</span>
                         </label>
                     </div>
 
                     <div class="col-span-3">
-                        <input type="time" name="{{ day|lower }}_start" value="09:00" class="input input-sm w-full rounded-lg border-cream font-bold text-xs focus:ring-1 focus:ring-primary time-input">
+                        {{ form.opening_time }}
                     </div>
                     <div class="col-span-3">
-                        <input type="time" name="{{ day|lower }}_end" value="21:00" class="input input-sm w-full rounded-lg border-cream font-bold text-xs focus:ring-1 focus:ring-primary time-input">
+                        {{ form.closing_time }}
+                    </div>
+
+                    <div class="closed {% if not form.instance.is_open %}hidden{% endif %} col-span-6">
+                        <div class="flex gap-2 w-66 bg-gray-200 items-center px-2 py-1 rounded">
+                            <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="#CC5500" viewBox="0 0 24 24">
+                                <path d="M14.5 6A6 6 0 1 0 18 14.5 4.5 4.5 0 0 1 14.5 6Z"/>
+                        </svg>
+                            <h1 class="font-semibold text-gray-500">Closed</h1>
+                        </div>
                     </div>
                 </div>
                 {% endfor %}
@@ -61,25 +73,25 @@
                 <div class="grid md:grid-cols-2 gap-6">
                     <div class="form-control">
                         <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Promo Badge</span></label>
-                        <input type="text" name="hero_badge" value="{{ store.hero_badge }}" class="input input-bordered rounded-xl bg-base-200 border-none font-bold">
+                        {{ store_form.hero_badge }}
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Main Title</span></label>
-                        <input type="text" name="hero_title" value="{{ store.hero_title }}" class="input input-bordered rounded-xl bg-base-200 border-none font-bold">
+                        {{ store_form.hero_title}}
                     </div>
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Hero Subtitle</span></label>
-                    <textarea name="hero_subtitle" class="textarea textarea-bordered rounded-xl bg-base-200 border-none font-medium h-24">{{ store.hero_subtitle }}</textarea>
+                    {{ store_form.hero_subtitle }}
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Hero Image</span></label>
-                    {% if store.hero_image %}
+                    {% if store_setting.hero_image %}
                         <div class="mb-2">
                             <img src="{{ store.hero_image.url }}" class="w-32 h-20 object-cover rounded-lg border border-cream shadow-sm">
                         </div>
                     {% endif %}
-                    <input type="file" name="hero_image" class="file-input file-input-bordered file-input-primary w-full rounded-xl bg-base-200 border-none" />
+                    {{ store_form.hero_image }}
                 </div>
             </div>
         </div>
@@ -88,26 +100,35 @@
             <div class="p-8 border-b border-cream">
                 <h3 class="font-heading font-black uppercase italic text-lg tracking-tighter">Delivery <span class="text-primary">Zones</span></h3>
             </div>
-            <div class="p-8 space-y-4">
-                <div class="grid grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl">
-                    <div class="col-span-6 font-bold text-sm uppercase">Lekki Phase 1 & 2</div>
+            {{ delivery_formset.management_form }}
+            <div class="p-8 space-y-4" id="formset_container">
+                {% for form in delivery_formset %}
+                <div id="{{ form.prefix }}" class="grid grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl selected-line-item">
+                    {{ from.id }}
+                    <div class="hidden">{{form.delete}}</div>
+                    <div class="col-span-6 font-bold text-sm uppercase">{{ form.name }}</div>
                     <div class="col-span-4">
-                        <input type="text" value="₦2,500" class="input input-sm w-full rounded-lg border-cream font-black text-primary">
+                        {{ form.fee }}
                     </div>
                     <div class="col-span-2 text-right">
-                        <button class="btn btn-ghost btn-circle btn-sm text-error">✕</button>
+                        <button type="button" class="btn btn-ghost btn-circle btn-sm text-error" onclick="deleteLineItem('{{ form.prefix }}')">✕</button>
                     </div>
                 </div>
-                <div class="grid grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl">
-                    <div class="col-span-6 font-bold text-sm uppercase">Ikeja / Magodo</div>
-                    <div class="col-span-4">
-                        <input type="text" value="₦4,500" class="input input-sm w-full rounded-lg border-cream font-black text-primary">
-                    </div>
-                    <div class="col-span-2 text-right">
-                        <button class="btn btn-ghost btn-circle btn-sm text-error">✕</button>
-                    </div>
+                {% endfor %}
+
+                <button type="button" class="btn btn-ghost btn-sm text-primary font-black uppercase text-[10px]" onclick="addLineItem">+ Add New Zone</button>
+            </div>
+
+            <div id="{{ delivery_formset.empty_form.prefix }}" class="empty-form hidden grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl selected-line-item">
+                {{ delivery_formset.empty_form.id }}
+                <div class="hidden">{{delivery_formset.empty_form.delete}}</div>
+                <div class="col-span-6 font-bold text-sm uppercase">{{ delivery_formset.empty_form.name }}</div>
+                <div class="col-span-4">
+                    {{ delivery_formset.empty_form.fee }}
                 </div>
-                <button type="button" class="btn btn-ghost btn-sm text-primary font-black uppercase text-[10px]">+ Add New Zone</button>
+                <div class="col-span-2 text-right">
+                    <button class="btn btn-ghost btn-circle btn-sm text-error" onclick="deleteLineItem('{{ formset.empty_form.prefix }}')">✕</button>
+                </div>
             </div>
         </div>
 
@@ -123,10 +144,10 @@
                         <input type="tel" value="8053384458" class="input input-bordered grow rounded-xl bg-base-200 border-none font-bold">
                     </div>
                 </div>
-                <div class="form-control">
+                <!-- <div class="form-control">
                     <label class="label"><span class="label-text font-black uppercase text-[10px] tracking-widest">Automated Customer Message</span></label>
                     <textarea class="textarea textarea-bordered rounded-xl bg-base-200 border-none font-medium h-24">Hi! Your Osaschops levels are being prepped. Order #ID is currently in the fryer! 🍗</textarea>
-                </div>
+                </div> -->
             </div>
         </div>
 
@@ -139,18 +160,20 @@
 </div>
 
 <script>
-    function toggleTimeInputs(checkbox) {
+function toggleTimeInputs(checkbox) {
     // Find the row container
     const row = checkbox.closest('.grid');
     const timeInputs = row.querySelectorAll('.time-input');
     const statusLabel = row.querySelector('.status-label');
+    const closedMessage = row.querySelector('.closed');
     
     if (checkbox.checked) {
         // Enable inputs
         timeInputs.forEach(input => {
             input.disabled = false;
-            input.classList.remove('opacity-30', 'grayscale');
+            input.classList.remove('hidden');
         });
+        closedMessage.classList.add("hidden")
         statusLabel.innerText = 'Open';
         statusLabel.classList.add('text-primary');
         statusLabel.classList.remove('text-gray-400');
@@ -158,12 +181,79 @@
         // Disable inputs
         timeInputs.forEach(input => {
             input.disabled = true;
-            input.classList.add('opacity-30', 'grayscale');
+            input.classList.add('hidden');
         });
+        closedMessage.classList.remove("hidden")
         statusLabel.innerText = 'Closed';
         statusLabel.classList.remove('text-primary');
         statusLabel.classList.add('text-gray-400');
     }
+
+}
+
+const business_formset_total_input = document.getElementById("id_business_day-TOTAL_FORMS");
+const formset_container = document.getElementById('formset_container');
+
+function addLineItem() {
+    const empty_form = document.querySelector(".empty-form").cloneNode(true);
+    // Find the current form index
+    let currentFormCount = parseInt(business_formset_total_input.value);
+
+    // 1. Check for duplicates among forms NOT marked for deletion
+    const existingLines = formset_container.querySelectorAll('.selected-line-item');
+
+    // Set the item details and item-specific attributes
+    empty_form.id = empty_form.id.replace(/__prefix__/g, `${currentFormCount}`);
+    empty_form.innerHTML = empty_form.innerHTML.replace(/__prefix__/g, `${currentFormCount}`)
+    empty_form.classList.remove("hidden")
+    empty_form.classList.remove("empty-form")
+    empty_form.classList.add("grid")
+    
+
+    // 3. Append to container and update TOTAL_FORMS
+    formset_container.append(empty_form);
+    business_formset_total_input.value = currentFormCount + 1;
+
+    updateManagementForm();
+}
+
+function deleteLineItem(formPrefix) {
+    const formElement = document.getElementById(formPrefix);
+    if (!formElement) return;
+
+    // Check if the form has an ID field (meaning it's an existing saved line)
+    const idInput = formElement.querySelector('input[id$="-id"]');
+    
+    if (idInput && idInput.value) {
+        // Existing item: Mark for deletion by checking the DELETE checkbox and hiding the element
+        const deleteCheckbox = formElement.querySelector('input[id$="-DELETE"]');
+        if (deleteCheckbox) {
+            deleteCheckbox.checked = true;
+            formElement.style.display = 'none';
+        }
+    } else {
+        // New item (no ID): Simply remove from the DOM
+        formElement.remove();
+    }
+
+    updateManagementForm();
+}
+
+function updateManagementForm() {
+    const lineItems = formset_container.querySelectorAll('.selected-line-item');
+    let formCount = 0;
+    
+    lineItems.forEach(line => {
+        // Only count forms that are NOT marked for deletion (not hidden and doesn't contain a checked DELETE box)
+        const deleteCheckbox = line.querySelector('input[type="checkbox"][id$="-DELETE"]');
+        if (line.style.display !== 'none' && (!deleteCheckbox || !deleteCheckbox.checked)) {
+            formCount++;
+        }
+    });
+    
+    // This is the true number of forms that will be submitted
+    business_formset_total_input.value = formCount; 
+
 }
 
 // Run on page load to set initial states
