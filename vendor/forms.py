@@ -7,6 +7,23 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         exclude = ["is_featured", "is_available"]
+        widgets = {
+            "name":forms.TextInput(attrs={
+                "class": "input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary"
+            }),
+            "category":forms.Select(attrs={
+                "class": "select select-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary"
+            }),
+            "price":forms.NumberInput(attrs={
+                "class": "input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary"
+            }),
+            "image":forms.FileInput(attrs={
+                "class":"file-input file-input-bordered file-input-primary w-full rounded-xl bg-base-200 border-none"
+            }),
+            "description":forms.Textarea(attrs={
+                "class":"textarea textarea-bordered  rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary"
+            }),
+        }
 
 
 class BusinessDayForm(forms.ModelForm):
@@ -69,11 +86,11 @@ class BusinessDayFormSet(BaseOpenFormset):
         for form in self.forms:
             # `form.initial.get("day")` handles existing form
             # `form.data.get(...)` handles new form submissions
-            day_index = form.initial.get("day") or form.data.get(form.prefix + "-day")
+            day_index = form.data.get(form.prefix + "-day") or form.initial.get("day")
 
             if day_index is not None:
-                # form.fields["is_open"].label = BusinessHour.Days[day_index][1]
-                form.fields["day"].label = BusinessDay.Days(day_index).label
+                form.fields["day"].label = BusinessDay.DAYS[day_index][1]
+                # form.fields["day"].label = BusinessDay.DAYS(day_index).label
 
 
 class StoreSettingForm(forms.ModelForm):

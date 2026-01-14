@@ -17,7 +17,7 @@ import json
 
 from cart.cart import Cart
 from .forms import OrderForm
-from shop.models import Order, OrderItem
+from shop.models import Order, OrderItem, Product
 from .paystack import checkout
 
 
@@ -59,6 +59,21 @@ class AddToCartView(View):
 
         return redirect(reverse("cart"))
 
+    def post(self, request):
+        cart = Cart(request)
+        data = json.loads(request.body.decode())
+        item_id = data.get("id")
+        quantity = data.get("quantity")
+
+        print(json.loads(request.body.decode()))
+
+        cart.add(item_id, quantity=int(quantity), update_quantity=True)
+        item = get_object_or_404(Product, id=item_id)
+
+        html_1 = render_to_string("shop/includes/menu_card.html", {"cart":cart, "item":item}, request)
+        html_2 = render_to_string("cart/includes/cart_drawer.html", {"cart":cart}, request)
+
+        return JsonResponse({"success":True, "html_1":html_1, "html_2":html_2})
 
 
 class UpdateCartView(View):

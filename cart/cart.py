@@ -82,4 +82,7 @@ class Cart(object):
             return self.cart[str(product_id)]
         
         else:
-            return None
+            return 
+            
+    def items(self):
+        return self.cart

@@ -1,0 +1,12 @@
+{% for item in cart %}
+<div class="flex items-center gap-4 bg-base-100 p-3 rounded-2xl border border-cream/50">
+    <img src="{{item.product.image.url}}" class="w-16 h-16 rounded-xl object-cover">
+    <div class="grow">
+        <h4 class="font-bold text-sm uppercase leading-tight">{{item.product.name}}</h4>
+        <p class="text-primary font-black text-sm">₦{{item.product.price}}</p>
+    </div>
+    <div class="flex items-center bg-base-200 rounded-full px-2 py-1">
+    <span class="font-bold text-xs">x{{item.quantity}}</span>
+    </div>
+</div>
+{% endfor %}

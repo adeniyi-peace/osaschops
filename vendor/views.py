@@ -17,7 +17,8 @@ class DashboardView(View):
         yesterday = timezone.now() - timedelta(days=1)
         today_revenue = Order.objects.filter(created_at__date=today).aggregate(total=Sum("total_amount"))["total"]
         yesterday_revenue =  Order.objects.filter(created_at__date=yesterday).aggregate(total=Sum("total_amount"))["total"]
-        percentage = ((today_revenue - yesterday_revenue)/yesterday_revenue) * 100
+        # percentage = ((today_revenue - yesterday_revenue)/yesterday_revenue) * 100
+        percentage = 0
 
         if percentage > 0:
             current_revenue = f"↗︎ {percentage}% more than yesterday"
@@ -26,7 +27,7 @@ class DashboardView(View):
 
         recent_orders = Order.objects.filter(status="pending").prefetch_related("items")
 
-        top_chops = Product.objects.all().prefetch_related("order_items").annotate(best_seller=Count("order_item")).order_by("best_seller")[:3]
+        top_chops = Product.objects.all().prefetch_related("order_items").annotate(best_seller=Count("order_items")).order_by("best_seller")[:3]
 
         context = {
             "current_revenue":current_revenue,
@@ -35,7 +36,7 @@ class DashboardView(View):
             "top_chops":top_chops
         }
 
-        return render(request, "vendor/dashbord_page.html", context)
+        return render(request, "vendor/dashboard_page.html", context)
     
 class OrderView(View):
     def get(self, request):
@@ -197,12 +198,14 @@ class ProductDeleteView(View):
 
 class SettingsView(View):
     def get(self, request):
-        business_day = BusinessDay.models.all()
+        business_day = BusinessDay.objects.all()
         delivery_zone = DeliveryZone.objects.all()
-        store_settings = get_object_or_404(StoreSetting, name="Osaschops")
+        # store_settings = get_object_or_404(StoreSetting, name="Osaschops")
+        store_settings = DeliveryZone.objects.all()
         business_formset = BusinessDayFormSet(queryset=business_day)
-        delivery_formset = DeliveryZoneFormset(queryset=delivery_zone)
-        store_form = StoreSettingForm(instance=store_settings)
+        delivery_formset = DeliveryZoneFormset(queryset=delivery_zone, prefix="delivery_zone")
+        # store_form = StoreSettingForm(instance=store_settings)
+        store_form = StoreSettingForm()
 
         context = {
             "business_formset":business_formset,
@@ -211,14 +214,14 @@ class SettingsView(View):
             "store_settings":store_settings,
         }
 
-        return render(request, "vendor/settings.html", context)
+        return render(request, "vendor/settings_page.html", context)
 
     def post(self, request):
-        business_day = BusinessDay.models.all()
+        business_day = BusinessDay.objects.all()
         delivery_zone = DeliveryZone.objects.all()
         store_settings = get_object_or_404(StoreSetting, name="Osaschops")
         business_formset = BusinessDayFormSet(request.POST, request.FILES, queryset=business_day)
-        delivery_formset = DeliveryZoneFormset(request.POST, request.FILES, queryset=delivery_zone)
+        delivery_formset = DeliveryZoneFormset(request.POST, request.FILES, queryset=delivery_zone, prefix="delivery_zone")
         store_form = StoreSettingForm(request.POST, request.FILES, instance=store_settings)
 
         if business_formset.is_valid() and delivery_formset.is_valid() and store_form.is_valid():

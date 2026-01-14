@@ -10,9 +10,9 @@
             </h1>
 
             <div role="tablist" class="tabs tabs-box bg-base-200 p-1 rounded-2xl overflow-x-auto flex-nowrap no-scrollbar">
-                <a role="tab" href="{% url "menu" %} class="tab {% if not request.GET.category %}tab-active{% endif %} font-bold uppercase text-xs tracking-widest px-8 transition-all">All</a>
+                <a role="tab" href="{% url "menu" %}" class="tab {% if not request.GET.category %}tab-active{% endif %} font-bold uppercase text-xs tracking-widest px-8 transition-all">All</a>
                 {% for category in categories %}
-                <a role="tab" href="{% url "menu" %}?category={{ category.slug }}" {% if request.GET.category == category.slug  %}tab-active{% endif %} class="tab font-bold uppercase text-xs tracking-widest px-8 transition-all">{{category.name}}</a>
+                <a role="tab" href="{% url "menu" %}?category={{ category.slug }}"  class="tab {% if request.GET.category == category.slug  %}tab-active{% endif %} font-bold uppercase text-xs tracking-widest px-8 transition-all">{{category.name}}</a>
                 {% endfor %}
                 <!-- <a role="tab" class="tab font-bold uppercase text-xs tracking-widest px-8 transition-all">Small Chops</a>
                 <a role="tab" class="tab font-bold uppercase text-xs tracking-widest px-8 transition-all">Platters</a>
@@ -23,9 +23,9 @@
 
     <div class="container mx-auto px-4 py-10">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            {% include "shop/include/menu_card" %}
-
+            {% for item in products %}
+            {% include "shop/includes/menu_card.html" %}
+            {% endfor %}
             <div class="flex bg-white rounded-3xl shadow-card overflow-hidden hover:shadow-heavy transition-all duration-300 group relative" 
                 id="product-card-{{ item.id }}"
                 data-aos="fade-up">

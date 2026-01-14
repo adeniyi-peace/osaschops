@@ -27,8 +27,8 @@
                     <div class="col-span-3">Open Time</div>
                     <div class="col-span-3">Close Time</div>
                 </div>
-
-                {% for forms in business_formset %}
+                
+                {% for form in business_formset %}
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-base-200/30 p-4 rounded-2xl border border-transparent hover:border-cream transition-all group">
                     {{ form.id }} 
                     <div class="col-span-3 font-black text-charcoal uppercase text-sm italic">
@@ -116,7 +116,7 @@
                 </div>
                 {% endfor %}
 
-                <button type="button" class="btn btn-ghost btn-sm text-primary font-black uppercase text-[10px]" onclick="addLineItem">+ Add New Zone</button>
+                <button type="button" class="btn btn-ghost btn-sm text-primary font-black uppercase text-[10px]" onclick="addLineItem()">+ Add New Zone</button>
             </div>
 
             <div id="{{ delivery_formset.empty_form.prefix }}" class="empty-form hidden grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl selected-line-item">
@@ -127,7 +127,7 @@
                     {{ delivery_formset.empty_form.fee }}
                 </div>
                 <div class="col-span-2 text-right">
-                    <button class="btn btn-ghost btn-circle btn-sm text-error" onclick="deleteLineItem('{{ formset.empty_form.prefix }}')">✕</button>
+                    <button class="btn btn-ghost btn-circle btn-sm text-error" onclick="deleteLineItem('{{ delivery_formset.empty_form.prefix }}')">✕</button>
                 </div>
             </div>
         </div>
@@ -171,7 +171,7 @@ function toggleTimeInputs(checkbox) {
         // Enable inputs
         timeInputs.forEach(input => {
             input.disabled = false;
-            input.classList.remove('hidden');
+            input.closest("div").classList.remove('hidden');
         });
         closedMessage.classList.add("hidden")
         statusLabel.innerText = 'Open';
@@ -181,7 +181,7 @@ function toggleTimeInputs(checkbox) {
         // Disable inputs
         timeInputs.forEach(input => {
             input.disabled = true;
-            input.classList.add('hidden');
+            input.closest("div").classList.add('hidden');
         });
         closedMessage.classList.remove("hidden")
         statusLabel.innerText = 'Closed';
@@ -191,13 +191,13 @@ function toggleTimeInputs(checkbox) {
 
 }
 
-const business_formset_total_input = document.getElementById("id_business_day-TOTAL_FORMS");
+const delivery_zone_formset_total_input = document.getElementById("id_delivery_zone-TOTAL_FORMS");
 const formset_container = document.getElementById('formset_container');
 
 function addLineItem() {
     const empty_form = document.querySelector(".empty-form").cloneNode(true);
     // Find the current form index
-    let currentFormCount = parseInt(business_formset_total_input.value);
+    let currentFormCount = parseInt(delivery_zone_formset_total_input.value);
 
     // 1. Check for duplicates among forms NOT marked for deletion
     const existingLines = formset_container.querySelectorAll('.selected-line-item');
@@ -212,7 +212,7 @@ function addLineItem() {
 
     // 3. Append to container and update TOTAL_FORMS
     formset_container.append(empty_form);
-    business_formset_total_input.value = currentFormCount + 1;
+    delivery_zone_formset_total_input.value = currentFormCount + 1;
 
     updateManagementForm();
 }
@@ -252,7 +252,7 @@ function updateManagementForm() {
     });
     
     // This is the true number of forms that will be submitted
-    business_formset_total_input.value = formCount; 
+    delivery_zone_formset_total_input.value = formCount; 
 
 }
 
