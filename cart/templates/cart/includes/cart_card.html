@@ -1,4 +1,4 @@
-{% for item in cart %}
+
 <div class="flex items-center bg-white p-4 rounded-3xl shadow-soft border border-cream/50 group" id="cart-item-{{ item.product.id }}" data-aos="fade-up">
     <div class="w-20 h-20 rounded-2xl overflow-hidden shrink-0">
         <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover">
@@ -12,13 +12,12 @@
     </div>
 
     <div class="flex items-center bg-base-200 rounded-full p-1 border border-cream">
-        <button onclick="updateCart('{{ item.product.id }}', 'decrease')" class="btn btn-circle btn-ghost btn-xs font-black">−</button>
+        <button onclick="updateCartPage('{{ item.product.id }}', 'decrease', this)" class="btn btn-circle btn-ghost btn-xs font-black">−</button>
         <span class="px-3 font-black text-sm" id="cart-qty-{{ item.product.id }}">{{ item.quantity }}</span>
-        <button onclick="updateCart('{{ item.product.id }}', 'increase')" class="btn btn-circle btn-ghost btn-xs font-black text-primary">+</button>
+        <button onclick="updateCartPage('{{ item.product.id }}', 'increase', this)" class="btn btn-circle btn-ghost btn-xs font-black text-primary">+</button>
     </div>
 
-    <button onclick="updateCart('{{ item.product.id }}', 'remove')" class="btn btn-ghost btn-circle text-gray-300 hover:text-error ml-2">
+    <button onclick="updateCartPage('{{ item.product.id }}', 'remove', this)" class="btn btn-ghost btn-circle text-gray-300 hover:text-error ml-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
     </button>
 </div>
-{% endfor %}

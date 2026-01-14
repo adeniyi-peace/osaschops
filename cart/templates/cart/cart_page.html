@@ -16,7 +16,9 @@
         <div class="grid lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-4">
                 {% if cart %}
+                    {% for item in cart %}
                     {% include "cart/includes/cart_list.html" %}
+                    {% endfor %}
                 {% else %}
                     <div class="text-center py-20 bg-white rounded-3xl shadow-soft">
                         <div class="text-6xl mb-4">🥡</div>
@@ -71,4 +73,51 @@
         Checkout Now
     </a>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function updateCartPage(itemId, action, button) {
+        const quantity = Number(document.getElementById(`cart-qty-${itemId}`)?.innerHTML) || 0
+        button.disabled = true
+        let new_quantity = 0
+
+        if (action === "increase") {
+            new_quantity = quantity + 1
+        }
+        else if (action === "decrease") {
+            new_quantity = quantity - 1
+        }
+
+        else if (action === "remove") {
+            new_quantity = 0
+        }
+
+        try {
+            response = await fetch("", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({id:itemId, quantity:new_quantity})
+            })
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            if (data.success === true) {
+                const menu_card = document.getElementById(`cart-item-${itemId}`)
+                const cart = document.getElementById("cart_item_number")
+                menu_card.outerHTML = data.html
+                cart.innerHTML = data.cart
+            }
+        } catch (error) {
+            console.log("Error:". error)
+        } finally {
+            button.disabled = false
+        }
+
+    }
+</script>
 {% endblock %}

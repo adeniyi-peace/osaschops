@@ -30,14 +30,16 @@ class CartView(View):
 
     def post(self, request):
         cart = Cart(request)
-        cart_id = request.POST.get("id")
-        cart_quantity = int(request.POST.get("quantity"))
+        data = json.loads(request.body.decode())
+        item_id = data.get("id")
+        quantity = data.get("quantity")
 
-        cart.add(cart_id, cart_quantity, True)
+        cart.add(item_id, quantity, True)
+        item = get_object_or_404(Product, id=item_id)
         
         html = render_to_string(
-            "cart/includes/cart_list.html", 
-            {"cart":cart, "reload":True}, 
+            "cart/includes/cart_card.html", 
+            {"cart":cart, "item":item}, 
             request
         )
             
@@ -73,7 +75,7 @@ class AddToCartView(View):
         html_1 = render_to_string("shop/includes/menu_card.html", {"cart":cart, "item":item}, request)
         html_2 = render_to_string("cart/includes/cart_drawer.html", {"cart":cart}, request)
 
-        return JsonResponse({"success":True, "html_1":html_1, "html_2":html_2})
+        return JsonResponse({"success":True, "html_1":html_1, "html_2":html_2, "cart":len(cart)})
 
 
 class UpdateCartView(View):
