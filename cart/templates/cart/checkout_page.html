@@ -33,11 +33,11 @@
                     <div class="grid md:grid-cols-2 gap-4">
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold uppercase text-xs">Full Name</span></label>
-                            <input type="text" name="full_name" placeholder="e.g. Osas Ighodaro" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full" required />
+                            {{ form.name }}
                         </div>
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold uppercase text-xs">Phone Number</span></label>
-                            <input type="tel" name="phone" placeholder="080XXXXXXXX" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full" required />
+                            {{ form.phone }}
                         </div>
                     </div>
                 </div>
@@ -50,22 +50,16 @@
                     <div class="space-y-4">
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold uppercase text-xs">Street Address / Estate Name</span></label>
-                            <input type="text" name="address" placeholder="House number and street name" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full" required />
+                            {{ form.address }}
                         </div>
                         <div class="grid md:grid-cols-2 gap-4">
                             <div class="form-control w-full">
                                 <label class="label"><span class="label-text font-bold uppercase text-xs">Area / City</span></label>
-                                <select name="area" class="select select-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full">
-                                    <option disabled selected>Select Area</option>
-                                    <option>Lekki Phase 1</option>
-                                    <option>Ikeja</option>
-                                    <option>Surulere</option>
-                                    <option>Yaba</option>
-                                </select>
+                                {{ form.delivery_zone }}
                             </div>
                             <div class="form-control w-full">
                                 <label class="label"><span class="label-text font-bold uppercase text-xs">Delivery Note (Optional)</span></label>
-                                <input type="text" name="note" placeholder="Gate code or landmarks" class="input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full" />
+                                {{ form.delivery_note }}
                             </div>
                         </div>
                     </div>
@@ -77,19 +71,17 @@
                         <h2 class="font-heading font-black uppercase text-xl">Payment Method</h2>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for choice in form.payment_ref %}
                         <label class="label cursor-pointer p-4 rounded-2xl border-2 border-base-200 has-checked:border-primary has-checked:bg-cream/20 transition-all">
                             <div class="flex items-center gap-4">
-                                <input type="radio" name="payment" class="radio radio-primary" checked />
-                                <span class="font-bold uppercase text-sm">Paystack (Card/Transfer)</span>
+                                {{ choice }}
+                                <span class="font-bold uppercase text-sm">{{ choice.label }}</span>
                             </div>
+                            {% if choice.label == "Paystack (Card/Transfer)" %}
                             <img src="https://paystack.com/assets/img/login/paystack-logo.png" class="h-4 hidden md:block grayscale opacity-50" alt="Paystack">
+                            {% endif %}
                         </label>
-                        <label class="label cursor-pointer p-4 rounded-2xl border-2 border-base-200 has-checked:border-primary has-checked:bg-cream/20 transition-all">
-                            <div class="flex items-center gap-4">
-                                <input type="radio" name="payment" class="radio radio-primary" />
-                                <span class="font-bold uppercase text-sm">Pay on Delivery</span>
-                            </div>
-                        </label>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -100,14 +92,29 @@
                         Review <span class="text-primary">Order</span>
                     </h2>
                     
-                    <div class="max-h-60 overflow-y-auto mb-6 pr-2 custom-scrollbar">
-                        {% for item in cart_items %}
-                        <div class="flex justify-between items-center mb-4">
-                            <div class="flex gap-3">
-                                <span class="text-primary font-black">x{{ item.quantity }}</span>
-                                <span class="text-sm font-medium text-gray-300 truncate w-32">{{ item.product.name }}</span>
+                    <div class="max-h-80 overflow-y-auto mb-6 pr-2 custom-scrollbar space-y-6">
+                        {% for pack in cart %} <div class="pack-review-group">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+                                    {{ pack.name }}
+                                </span>
+                                <div class="h-px grow bg-white/5"></div>
                             </div>
-                            <span class="font-bold">₦{{ item.total_item_price }}</span>
+                            
+                            <div class="space-y-3 pl-2">
+                                {% for item in pack.items %}
+                                <div class="flex justify-between items-start">
+                                    <div class="flex gap-3">
+                                        <span class="text-white/40 font-bold text-xs mt-0.5">x{{ item.quantity }}</span>
+                                        <div class="flex flex-col">
+                                            <span class="text-xs font-bold text-gray-200 uppercase tracking-tight">{{ item.product.name }}</span>
+                                            <span class="text-[10px] text-gray-500 font-medium">₦{{ item.product.price }} each</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-black">₦{{ item.total_price }}</span>
+                                </div>
+                                {% endfor %}
+                            </div>
                         </div>
                         {% endfor %}
                     </div>
@@ -115,7 +122,7 @@
                     <div class="space-y-3 border-t border-white/10 pt-6">
                         <div class="flex justify-between text-gray-400 text-sm">
                             <span>Subtotal</span>
-                            <span>₦{{ total_price }}</span>
+                            <span>₦{{ cart.get_total_cost }}</span>
                         </div>
                         <div class="flex justify-between text-gray-400 text-sm">
                             <span>Delivery Fee</span>

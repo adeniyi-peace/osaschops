@@ -6,6 +6,7 @@ from django.db.models import Sum, Count, F, ExpressionWrapper, DurationField, Av
 from django.db.models.functions import Now
 from django.http import JsonResponse
 from django.template.loader import render_to_string
+import json
 
 from shop.models import Order, OrderItem, Product, EventInquiry, Category
 from . models import BusinessDay, DeliveryZone, StoreSetting
@@ -14,42 +15,75 @@ from . forms import ProductForm, BusinessDayFormSet, DeliveryZoneFormset, StoreS
 class DashboardView(View):
     def get(self, request):
         today = timezone.now().date()
-        yesterday = timezone.now() - timedelta(days=1)
-        today_revenue = Order.objects.filter(created_at__date=today).aggregate(total=Sum("total_amount"))["total"]
-        yesterday_revenue =  Order.objects.filter(created_at__date=yesterday).aggregate(total=Sum("total_amount"))["total"]
-        # percentage = ((today_revenue - yesterday_revenue)/yesterday_revenue) * 100
+        yesterday = today - timedelta(days=1)
+        
+        # Revenue calculations
+        today_revenue = Order.objects.filter(created_at__date=today, paid=True).aggregate(total=Sum("total_amount"))["total"] or 0
+        yesterday_revenue = Order.objects.filter(created_at__date=yesterday, paid=True).aggregate(total=Sum("total_amount"))["total"] or 0
+        
         percentage = 0
+        if yesterday_revenue > 0:
+            percentage = round(((today_revenue - yesterday_revenue) / yesterday_revenue) * 100)
 
-        if percentage > 0:
-            current_revenue = f"↗︎ {percentage}% more than yesterday"
-        else:
-            current_revenue = f"{percentage}% less than yesterday"
+        current_revenue = f"↗︎ {percentage}% vs yesterday" if percentage >= 0 else f"↘︎ {abs(percentage)}% vs yesterday"
 
-        recent_orders = Order.objects.filter(status="pending").prefetch_related("items")
+        # Refactored: Fetch orders with their packs and items
+        recent_orders = Order.objects.filter(status="pending").prefetch_related(
+            "packs__items__product"
+        )
 
-        top_chops = Product.objects.all().prefetch_related("order_items").annotate(best_seller=Count("order_items")).order_by("best_seller")[:3]
+        # Refactored: Count products through the OrderItem -> OrderPack link
+        top_chops = Product.objects.annotate(
+            best_seller=Count("order_items") # order_items is related_name in OrderItem model
+        ).order_by("-best_seller")[:3]
 
         context = {
-            "current_revenue":current_revenue,
-            "today_revenue":today_revenue,
-            "recent_orders":recent_orders,
-            "top_chops":top_chops
+            "current_revenue": current_revenue,
+            "today_revenue": today_revenue,
+            "recent_orders": recent_orders,
+            "top_chops": top_chops,
+            "percentage": percentage
         }
-
         return render(request, "vendor/dashboard_page.html", context)
+
+        
     
 class OrderView(View):
     def get(self, request):
-        active_orders = Order.objects.exclude(status="delivered").annotate(
-            time_elapsed=ExpressionWrapper(Now - F("created_at")),
-            output_field = DurationField()
-        )
+        active_orders = Order.objects.exclude(status="delivered").prefetch_related(
+            'packs__items__product'
+        ).select_related('delivery_zone')
 
         context = {
             "active_orders":active_orders,
         }
 
         return render(request, "vendor/order_page.html", context)
+
+class OrderReceiptView(View):
+    def get(self, request, order_id):
+        order = get_object_or_404(
+            Order.objects.prefetch_related('packs__items__product'), 
+            id=order_id
+        )
+        return render(request, "vendor/order_receipt.html", {"order": order})
+
+
+class UpdateOrderStatusView(View):
+    def post(self, request, order_id):
+        data = json.loads(request.body)
+        new_status = data.get('status')
+        order = get_object_or_404(Order, id=order_id)
+        
+        order.status = new_status
+        order.save()
+
+        # Trigger WhatsApp only when shipping
+        if new_status == 'shipped':
+            # send_whatsapp_update(order)
+            ...
+
+        return JsonResponse({'success': True})
     
 
 class SalesReportView(TemplateView):
@@ -136,8 +170,9 @@ class MenuListView(View):
     
     def post(self, request):
         try:
-            pk = request.POST.get("itemId")
-            is_available = request.POST.get('available')
+            data = json.loads(request.body)
+            pk = data.get("itemId")
+            is_available = data.get('available')
             
             # Update the product
             product = Product.objects.get(pk=pk)

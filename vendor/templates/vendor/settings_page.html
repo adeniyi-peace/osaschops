@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        </div> <div class="bg-white rounded-[2.5rem] shadow-soft border border-cream overflow-hidden" data-aos="fade-up">
+        <div class="bg-white rounded-[2.5rem] shadow-soft border border-cream overflow-hidden" data-aos="fade-up">
             <div class="p-8 border-b border-cream">
                 <h3 class="font-heading font-black uppercase italic text-lg tracking-tighter">Hero <span class="text-primary">Branding</span></h3>
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Control the main banner text and imagery</p>
@@ -101,12 +101,20 @@
                 <h3 class="font-heading font-black uppercase italic text-lg tracking-tighter">Delivery <span class="text-primary">Zones</span></h3>
             </div>
             {{ delivery_formset.management_form }}
+            
             <div class="p-8 space-y-4" id="formset_container">
+
+                <div class="grid grid-cols-12 gap-4 px-4 pb-2 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                    <div class="col-span-6">Delivery Area Name</div>
+                    <div class="col-span-4">Fee (₦)</div>
+                    <div class="col-span-2 text-right">Action</div>
+                </div>
+
                 {% for form in delivery_formset %}
                 <div id="{{ form.prefix }}" class="grid grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl selected-line-item">
                     {{ from.id }}
                     <div class="hidden">{{form.delete}}</div>
-                    <div class="col-span-6 font-bold text-sm uppercase">{{ form.name }}</div>
+                    <div class="col-span-6">{{ form.name }}</div>
                     <div class="col-span-4">
                         {{ form.fee }}
                     </div>
