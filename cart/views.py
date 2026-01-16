@@ -21,6 +21,7 @@ from shop.models import Order, OrderItem, Product
 from .paystack import checkout
 
 
+
 class CartView(View):
     def get(self, request):
         cart = Cart(request)
@@ -33,17 +34,33 @@ class CartView(View):
         data = json.loads(request.body.decode())
         item_id = data.get("id")
         quantity = data.get("quantity")
+        pack_id = data.get("pack_id") # New: targeted pack
 
-        cart.add(item_id, quantity, True)
-        item = get_object_or_404(Product, id=item_id)
+        # Update the specific pack
+        cart.add(item_id, quantity, update_quantity=True, pack_id=pack_id)
         
-        html = render_to_string(
-            "cart/includes/cart_card.html", 
-            {"cart":cart, "item":item}, 
-            request
-        )
+        # We re-render the entire pack or the entire list for simplicity
+        # For a high-end feel, re-rendering the pack container is best
+        context = {"cart": cart, "total_price": cart.get_total_cost()}
+        html = render_to_string("cart/includes/cart_list_partial.html", context, request)
             
-        return JsonResponse({"html":html, "status":True, "cart":len(cart)})
+        return JsonResponse({
+            "html": html, 
+            "success": True, 
+            "cart": len(cart),
+            "total": cart.get_total_cost()
+        })
+
+class CartDrawerView(View):
+    def get(self, request):
+        cart = Cart(request)
+        html_drawer = render_to_string("cart/includes/cart_drawer.html", {"cart": cart}, request)
+
+        return JsonResponse({
+            "success": True,
+            "html_drawer": html_drawer,
+            "total": cart.get_total_cost(),
+        })
     
 
 
@@ -66,10 +83,12 @@ class AddToCartView(View):
         data = json.loads(request.body.decode())
         item_id = data.get("id")
         quantity = data.get("quantity")
+        # Allow specifying a pack_id from frontend, or use the default active one
+        pack_id = data.get("pack_id") 
 
-        print(json.loads(request.body.decode()))
+        # Our new cart.add method handles the pack logic
+        cart.add(item_id, quantity=int(quantity), update_quantity=True, pack_id=pack_id)
 
-        cart.add(item_id, quantity=int(quantity), update_quantity=True)
         item = get_object_or_404(Product, id=item_id)
 
         html_1 = render_to_string("shop/includes/menu_card.html", {"cart":cart, "item":item}, request)
@@ -78,14 +97,45 @@ class AddToCartView(View):
         return JsonResponse({"success":True, "html_1":html_1, "html_2":html_2, "cart":len(cart)})
 
 
-class UpdateCartView(View):
-    def get(self, request, id):
+class ManagePackView(View):
+    def post(self, request):
         cart = Cart(request)
-        quantity = request.GET.get("quantity")
-        cart.add(product_id=id, quantity=quantity, update_quantity=True)
+        data = json.loads(request.body)
+        action = data.get('action')
+        pack_id = data.get('pack_id')
+        reload = False
 
-        return redirect(reverse("cart"))
+        if action == 'create':
+            cart.add_pack()
+        elif action == 'duplicate':
+            cart.duplicate_pack(pack_id)
+        elif action == 'remove':
+            if cart.active_pack_id == pack_id:
+                reload = True
 
+            cart.remove_pack(pack_id)
+
+        elif action == 'switch':
+            cart.set_active_pack(pack_id)
+            reload = True
+
+        # Re-render the drawer content
+        html_drawer = render_to_string("cart/includes/cart_drawer.html", {"cart": cart}, request)
+        
+        return JsonResponse({
+            "success": True,
+            "html_drawer": html_drawer,
+            "total": cart.get_total_cost(),
+            "cart_count": len(cart),
+            "reload":reload,
+        })    
+
+
+class SwitchPackView(View):
+    def get(self, request, pack_id):
+        cart =Cart(request)
+        cart.set_active_pack(pack_id)
+        return redirect("cart")
 
 
 class RemoveFromCartView(View):

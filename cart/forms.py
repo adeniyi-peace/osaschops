@@ -27,6 +27,12 @@ class OrderForm(forms.ModelForm):
                 "class":"select select-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full",
                 "placeholder":"House number and street name"
             }),
-            "status" : "",
-            "payment_ref" : "",
+            "payment_ref" : forms.RadioSelect(attrs={
+                "class":"radio radio-primary"
+            },
+            choices=(("Paystack (Card/Transfer)", "Paystack (Card/Transfer)"),("Pay on Delivery", "Pay on Delivery"))),
+            "note":forms.TextInput(attrs={
+                "class":"input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full",
+                "placeholder":"Gate code or landmarks"
+            })
         }

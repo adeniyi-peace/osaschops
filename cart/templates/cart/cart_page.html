@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <section class="bg-base-200/50 min-h-screen pb-24">
@@ -14,19 +15,8 @@
         </div>
 
         <div class="grid lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 space-y-4">
-                {% if cart %}
-                    {% for item in cart %}
-                    {% include "cart/includes/cart_list.html" %}
-                    {% endfor %}
-                {% else %}
-                    <div class="text-center py-20 bg-white rounded-3xl shadow-soft">
-                        <div class="text-6xl mb-4">🥡</div>
-                        <h2 class="text-xl font-heading font-bold uppercase">Your bag is empty</h2>
-                        <p class="text-gray-500 mb-8">Levels dey wait! Go grab some chops.</p>
-                        <a href="{% url 'menu' %}" class="btn btn-primary rounded-full px-10 font-bold">Browse Menu</a>
-                    </div>
-                {% endif %}
+            <div class="lg:col-span-2 space-y-10" id="cart-wrapper">
+                {% include 'cart/includes/cart_list_partial.html' %}
             </div>
 
             <div class="lg:col-span-1">
@@ -36,18 +26,23 @@
                     </h2>
                     
                     <div class="space-y-4 mb-8">
-                        <div class="flex justify-between text-gray-400 font-medium">
-                            <span>Subtotal</span>
-                            <span class="text-white">₦{{ total_price }}</span>
+                        <div class="flex justify-between items-end">
+                            <span class="font-heading font-bold uppercase">Grand Total</span>
+                            <span class="text-3xl font-black text-primary tracking-tighter" id="grand-total">
+                                ₦{{ total_price|intcomma }}
+                            </span>
                         </div>
                         <div class="flex justify-between text-gray-400 font-medium">
                             <span>Delivery</span>
-                            <span class="text-success font-bold">Calculated at Checkout</span>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Final delivery cost depends on location
+                            </p>
+                            <!-- <span class="text-success font-bold">Calculated at Checkout</span> -->
                         </div>
-                        <div class="border-t border-white/10 pt-4 flex justify-between items-end">
+                        <!-- <div class="border-t border-white/10 pt-4 flex justify-between items-end">
                             <span class="font-heading font-bold uppercase">Total</span>
                             <span class="text-3xl font-black text-primary tracking-tighter">₦{{ total_price }}</span>
-                        </div>
+                        </div> -->
                     </div>
 
                     <a href="{% url 'checkout' %}" class="btn btn-primary w-full btn-lg rounded-full text-soft-black font-black uppercase italic shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform">
@@ -64,21 +59,27 @@
     </div>
 </section>
 
-<div class="lg:hidden fixed bottom-0 left-0 w-full bg-white p-4 border-t border-cream shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-40">
+<div class="lg:hidden fixed bottom-0 left-0 w-full bg-white p-4 border-t border-cream shadow-[0_-12px_40px_rgba(247,147,30,0.25)] z-40">
     <div class="flex items-center justify-between mb-2">
         <span class="text-gray-500 font-bold text-xs uppercase">Total Amount</span>
         <span class="text-xl font-black text-charcoal">₦{{ total_price }}</span>
     </div>
-    <a href="{% url 'checkout' %}" class="btn btn-primary w-full rounded-full font-black uppercase italic">
+    <a href="{% url 'checkout' %}" class="btn btn-primary w-full rounded-full font-black uppercase animate-pulse flex items-center justify-center gap-2">
         Checkout Now
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+            d="M9 5l7 7-7 7" />
+        </svg>
     </a>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    async function updateCartPage(itemId, action, button) {
-        const quantity = Number(document.getElementById(`cart-qty-${itemId}`)?.innerHTML) || 0
+    async function updateCartPage(itemId, action, packID, button) {
+        const qtySpan = document.getElementById(`cart-qty-${packID}-${itemId}`)
+        const quantity = qtySpan ? Number(qtySpan.innerHTML) : 0
         button.disabled = true
         let new_quantity = 0
 
@@ -100,20 +101,22 @@
                     'Content-Type': 'application/json',
                     'X-CSRFToken': '{{ csrf_token }}'
                 },
-                body: JSON.stringify({id:itemId, quantity:new_quantity})
+                body: JSON.stringify({id:itemId, quantity:new_quantity, pack_id: packID})
             })
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`)
             }
             const data = await response.json()
             if (data.success === true) {
-                const menu_card = document.getElementById(`cart-item-${itemId}`)
+                const menu_list = document.getElementById('cart-wrapper')
                 const cart = document.getElementById("cart_item_number")
-                menu_card.outerHTML = data.html
+                const grandTotal = document.getElementById('grand-total');
+                grandTotal.innerHTML = `₦${data.total.toLocaleString()}`;
+                menu_list.innerHTML = data.html
                 cart.innerHTML = data.cart
             }
         } catch (error) {
-            console.log("Error:". error)
+            console.log("Error:", error)
         } finally {
             button.disabled = false
         }

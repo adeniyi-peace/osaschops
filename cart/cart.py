@@ -4,32 +4,104 @@ from shop.models import Product
 
 
 class Cart(object):
+    """
+    Cart structure 
+
+    cart = {
+        "pack_1": {
+            "name": "Office Party Pack",
+            "items": {
+                "prod_id_1": {"quantity": 10},
+                "prod_id_2": {"quantity": 5}
+            }
+        },
+        "pack_2": {
+            "name": "Home Treats",
+            "items": {
+                "prod_id_1": {"quantity": 20}
+            }
+        }
+    }
+
+    """
     def __init__(self, request):
         self.session = request.session
         cart = self.session.get(settings.CART_SESSION_ID)
 
         if not cart:
-            cart = self.session[settings.CART_SESSION_ID] = {}
-
+            # Initialize with one default pack
+            cart = self.session[settings.CART_SESSION_ID] = {
+                "pack_1": {"name": "Pack 1", "items": {}}
+            }
         self.cart = cart
+        # Track which pack the user is currently editing
+        self.active_pack_id = self.session.get('active_pack_id', 'pack_1')
 
     
     def __iter__(self):
-        product_ids = self.cart.keys()
-        products = Product.objects.filter(id__in=product_ids)
+        """Iterate through packs and their resolved products"""
+        product_ids = []
+        for pack in self.cart.values():
+            product_ids.extend(pack['items'].keys())
         
-        for product in products:
-            item_data = self.cart[str(product.id)]
+        products = Product.objects.filter(id__in=product_ids)
+        product_dict = {str(p.id): p for p in products}
 
-            item = item_data.copy()
-            item["product"] = product
-            item["total_price"] = int(product.price) * int(item["quantity"])
-
-            yield item
+        for pack_id, pack_data in self.cart.items():
+            pack_items = []
+            pack_total = 0
+            
+            for p_id, item_data in pack_data['items'].items():
+                product = product_dict.get(p_id)
+                if product:
+                    total_item_price = product.price * item_data['quantity']
+                    pack_items.append({
+                        'product': product,
+                        'quantity': item_data['quantity'],
+                        'total_price': total_item_price
+                    })
+                    pack_total += total_item_price
+            
+            yield {
+                'pack_id': pack_id,
+                'name': pack_data['name'],
+                'items': pack_items,
+                'total_price': pack_total,
+                'is_active': pack_id == self.active_pack_id
+            }
 
 
     def __len__(self):
-        return sum(int(item["quantity"] )for item in self.cart.values())
+        quantities = []
+        for pack in self.cart.values():
+            for item in pack['items'].values():
+                quantities.append(int(item['quantity']))
+        return sum(quantities)
+
+    
+    def set_active_pack(self, pack_id):
+        if pack_id in self.cart:
+            self.active_pack_id = pack_id
+            self.session['active_pack_id'] = pack_id
+            self.session.modified = True
+    
+    def get_active_pack(self, pack_id):
+        if pack_id in self.cart:
+            return self.session['active_pack_id'] 
+
+    def add_pack(self, name=None):
+        new_id = f"pack_{len(self.cart) + 1}"
+        self.cart[new_id] = {
+            "name": name or f"Pack {len(self.cart) + 1}",
+            "items": {}
+        }
+        self.save()
+        return new_id
+
+
+    def save(self):
+        self.session[settings.CART_SESSION_ID] = self.cart
+        self.session.modified = True
     
 
     def save(self):
@@ -37,17 +109,23 @@ class Cart(object):
         self.session.modified = True
 
 
-    def add(self, product_id, quantity=1, update_quantity=False):
+    def add(self, product_id, quantity=1, update_quantity=False, pack_id=None):
+        # Use provided pack_id or fall back to the active one
+        target_pack = pack_id or self.active_pack_id
         product_id = str(product_id)
+        
+        items = self.cart[target_pack]["items"]
 
-        if product_id not in self.cart:
-            self.cart[product_id] = {"quantity":quantity, "id":product_id}
+        if product_id not in items:
+            items[product_id] = {"quantity": 0}
 
         if update_quantity:
-            self.cart[product_id]["quantity"] = int(quantity)
+            items[product_id]["quantity"] = int(quantity)
+        else:
+            items[product_id]["quantity"] += int(quantity)
 
-            if self.cart[product_id]["quantity"] == 0:
-                self.remove(product_id)
+        if items[product_id]["quantity"] <= 0:
+            del items[product_id]
 
         self.save()
 
@@ -67,15 +145,24 @@ class Cart(object):
         self.session.modified = True
 
     def get_total_cost(self):
-        product_ids = self.cart.keys()
-        # Fetch all products in the cart in ONE query
-        products = Product.objects.filter(id__in=product_ids)
+        all_product_ids = set()
+        for pack in self.cart.values():
+            all_product_ids.update(pack['items'].keys())
+
+        products = Product.objects.filter(id__in=all_product_ids)
         
+        # 3. Create a mapping of {id_string: price} for fast lookup
+        price_map = {str(p.id): p.price for p in products}
+
+        # 4. Calculate total using the map (No more DB hits)
         total = 0
-        for product in products:
-            quantity = self.cart[str(product.id)]['quantity']
-            total += product.price * quantity
+        for pack in self.cart.values():
+            for p_id, item in pack['items'].items():
+                price = price_map.get(str(p_id), 0)
+                total += price * item['quantity']
+                
         return total
+
     
     def get_item(self, product_id):
         if str(product_id) in self.cart:
@@ -86,3 +173,24 @@ class Cart(object):
             
     def items(self):
         return self.cart
+
+    def duplicate_pack(self, pack_id):
+        if pack_id in self.cart:
+            new_id = f"pack_{len(self.cart) + 1}"
+            # Deep copy the pack data
+            new_pack = {
+                "name": f"{self.cart[pack_id]['name']} (Copy)",
+                "items": self.cart[pack_id]['items'].copy()
+            }
+            self.cart[new_id] = new_pack
+            self.save()
+            return new_id
+
+    def remove_pack(self, pack_id):
+        if pack_id in self.cart and len(self.cart) > 1:
+            del self.cart[pack_id]
+            # If we deleted the active pack, set active to the first available one
+            if self.active_pack_id == pack_id:
+                first_pack_in_cart = list(self.cart.keys())[0]
+                self.set_active_pack(first_pack_in_cart )
+            self.save()

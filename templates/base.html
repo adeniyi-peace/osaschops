@@ -25,7 +25,7 @@
 </head>
 <body class="min-h-screen flex flex-col bg-base-100 text-charcoal overflow-x-hidden">
 
-    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-cream shadow-soft">
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-cream shadow-soft">
         <div class="navbar container mx-auto px-4">
             <div class="navbar-start">
                 <div class="dropdown">
@@ -38,7 +38,7 @@
                         <li><a href="{% url "about_us" %}">About Us</a></li>
                     </ul>
                 </div>
-                <a href="/" class="text-xl font-heading font-black tracking-tighter uppercase italic">
+                <a href="/" class="text-xl font-heading font-black tracking-tight uppercase italic">
                     Osas<span class="text-primary">Chops</span>
                 </a>
                 <div class="flex items-center gap-2">
@@ -65,10 +65,10 @@
             </div>
 
             <div class="navbar-end space-x-4">
-                <button class="btn btn-ghost btn-circle">
+                <button class="btn btn-ghost btn-circle" onclick="renderDrawerItems(this)">
                     <div class="indicator">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                        <span class="badge badge-sm badge-primary indicator-item" id="cart_item_number">0</span>
+                        <span class="badge badge-sm badge-primary indicator-item" id="cart_item_number">{{ cart|length }}</span>
                     </div>
                 </button>
                 <a href={% url "menu" %} class="btn btn-primary text-soft-black font-bold rounded-full px-8 shadow-soft hover:shadow-heavy transition-soft hidden md:flex">Order Now</a>
@@ -76,37 +76,59 @@
         </div>
     </header>
 
-    <div id="cart-drawer" class="fixed inset-0 z-100 invisible">
+    <div id="cart-drawer" class="fixed inset-0 z-200 invisible max-h-screen overflow-y-hidden">
+    
+        <!-- Overlay -->
         <div id="drawer-overlay" class="absolute inset-0 bg-charcoal/40 backdrop-blur-sm opacity-0 transition-opacity duration-300"></div>
-        
-        <div id="drawer-content" class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-heavy translate-x-full transition-transform duration-300 flex flex-col">
+
+        <!-- Bottom Sheet -->
+        <div id="drawer-content"
+            class="absolute bottom-0 left-0 right-0 w-full max-w-xl mx-auto 
+            bg-white rounded-t-3xl shadow-heavy translate-y-full
+            transition-transform duration-300 flex flex-col h-full">
             
-            <div class="p-6 border-b border-cream flex justify-between items-center bg-white">
-                <h2 class="font-heading font-black uppercase italic tracking-tighter text-xl">
+            <!-- Handle Bar -->
+            <div class="flex justify-center mt-3">
+                <div class="h-1.5 w-12 rounded-full bg-gray-300"></div>
+            </div>
+
+            <!-- Header -->
+            <div class="p-5 border-b border-cream flex justify-between items-center">
+                <h2 class="font-heading font-black uppercase italic tracking-tighter text-lg">
                     Your <span class="text-primary">Chops Bag</span>
                 </h2>
                 <button onclick="toggleDrawer(false)" class="btn btn-ghost btn-circle">✕</button>
             </div>
 
-            <div id="drawer-items-list" class="grow overflow-y-auto p-6 space-y-4">
-                <div class="text-center py-10 opacity-50">
+            <!-- Items -->
+            <div id="drawer-items-list" class="grow overflow-y-auto p-5 space-y-4">
+                <div class="text-center py-10 opacity-50 overflow-y-auto">
                     <p class="font-bold uppercase text-xs tracking-widest">Bag is loading...</p>
                 </div>
             </div>
 
-            <div class="p-6 bg-base-200 border-t border-cream">
-                <div class="flex justify-between items-center mb-6">
+            <!-- Footer -->
+            <div class="p-6 bg-base-200 border-t border-cream rounded-b-3xl">
+                <div class="flex justify-between items-center mb-4">
                     <span class="font-heading font-bold uppercase text-sm">Subtotal</span>
                     <span id="drawer-total" class="text-2xl font-black text-charcoal">₦0.00</span>
                 </div>
                 
                 <div class="grid grid-cols-1 gap-3">
-                    <a href="{% url "cart" %}" class="btn btn-outline border-charcoal text-charcoal rounded-full font-bold uppercase text-xs">View Full Bag</a>
-                    <a href="{% url "checkout" %}" class="btn btn-primary rounded-full btn-lg font-black uppercase italic shadow-lg shadow-orange-500/20">Checkout Now</a>
+                    <a href="{% url 'cart' %}" 
+                    class="btn btn-outline border-charcoal text-charcoal rounded-full font-bold uppercase text-xs">
+                        View Full Bag
+                    </a>
+
+                    <a href="{% url 'checkout' %}" 
+                    class="btn btn-primary rounded-full btn-lg font-black uppercase italic shadow-lg shadow-orange-500/20 w-full">
+                        Checkout Now
+                    </a>
                 </div>
             </div>
         </div>
     </div>
+
     
 
     <div class="fixed top-24 right-4 z-100 flex flex-col gap-3 w-full max-w-sm pointer-events-none">
@@ -185,24 +207,18 @@
         
         if (open) {
             drawer.classList.remove('invisible');
-            console.log(overlay)
-            console.log(content)
             setTimeout(() => {
                 overlay.classList.add('opacity-100');
-                content.classList.remove('translate-x-full');
+                content.classList.remove('translate-y-full');
             }, 10);
-            // renderDrawerItems(); // Refresh items whenever drawer opens
         } else {
             overlay.classList.remove('opacity-100');
-            content.classList.add('translate-x-full');
-            setTimeout(() => {
-                drawer.classList.add('invisible');
-            }, 300);
+            content.classList.add('translate-y-full');
+            setTimeout(() => drawer.classList.add('invisible'), 300);
         }
     }
 
-    // Close on overlay click
-    overlay.addEventListener('click', () => toggleDrawer(false));
+    document.getElementById('drawer-overlay').addEventListener('click', () => toggleDrawer(false));
 
     // Update your existing updateCart function to trigger the drawer
     //  async function updateCart(itemId, action) {
@@ -214,28 +230,31 @@
     //     }
     // }
 
-    function renderDrawerItems() {
+    async function renderDrawerItems(button) {
         const listContainer = document.getElementById('drawer-items-list');
-        // In a real app, you'd fetch this from your Django API
-        // This is a placeholder of how you'd inject the HTML
-        /*
-        listContainer.innerHTML = cartData.map(item => `
-            <div class="flex items-center gap-4 bg-base-100 p-3 rounded-2xl border border-cream/50">
-                <img src="${item.img}" class="w-16 h-16 rounded-xl object-cover">
-                <div class="flex-grow">
-                    <h4 class="font-bold text-sm uppercase leading-tight">${item.name}</h4>
-                    <p class="text-primary font-black text-sm">₦${item.price}</p>
-                </div>
-                <div class="flex items-center bg-base-200 rounded-full px-2 py-1">
-                <span class="font-bold text-xs">x${item.qty}</span>
-                </div>
-            </div>
-        `).join('');
-        */
+        button.disabled = true
+        
+         try {
+            response = await fetch(`/cart/cart-drawer/`)
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
+            const data = await response.json()
+            if (data.success === true) {
+                listContainer.innerHTML = data.html_drawer;
+                document.getElementById('drawer-total').innerHTML = `₦${data.total}`;
+                toggleDrawer(true);
+            }
+        } catch (error) {
+            console.log("Error:". error)
+        } finally {
+            button.disabled = false
+        }
     }
 
     async function updateCart(itemId, action, button) {
-        const quantity = Number(document.getElementById(`qty-val-${itemId}`)?.innerHTML) || 0
+        const qtySpan = document.getElementById(`qty-val-${itemId}`)
+        const quantity = qtySpan ? Number(qtySpan.innerHTML) : 0
         let new_quantity = 0
 
         if (action === "increase") {
@@ -265,12 +284,46 @@
                 menu_card.outerHTML = data.html_1
                 listContainer.innerHTML = data.html_2
                 cart.innerHTML = data.cart
-                toggleDrawer(true);
             }
         } catch (error) {
             console.log("Error:". error)
         }
 
+    }
+
+    async function managePack(action, packId = null) {
+        // Show a small loader in the drawer while processing
+        const listContainer = document.getElementById('drawer-items-list');
+        listContainer.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(`/cart/manage-pack/`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ action: action, pack_id: packId })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Update Drawer HTML
+                listContainer.innerHTML = data.html_drawer;
+                document.getElementById('drawer-total').innerHTML = `₦${data.total}`;
+                
+                // If we are on the menu page, we might need to refresh the menu cards 
+                // because the 'active' pack has changed.
+                if (data.reload) {
+                    // Logic to refresh all menu cards or just reload page if simpler
+                    location.reload(); 
+                }
+            }
+        } catch (error) {
+            console.error("Pack Management Error:", error);
+        } finally {
+            listContainer.style.opacity = '1';
+        }
     }
     </script>
     {% block extra_js %}{% endblock %}

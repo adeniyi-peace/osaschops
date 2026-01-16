@@ -77,4 +77,4 @@ class BulkOrderView(FormView):
         return super().form_valid(form)
 
 class AboutUsPage(TemplateView):
-    template_name="shop/about_us_page"
+    template_name="shop/about_us_page.html"

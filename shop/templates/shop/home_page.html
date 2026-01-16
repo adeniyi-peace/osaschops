@@ -92,23 +92,8 @@
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for product in products %}
-            <div class="card bg-white shadow-card rounded-2xl overflow-hidden group hover:-translate-y-2 transition-all duration-300" data-aos="fade-up">
-                <figure class="relative overflow-hidden aspect-4/3">
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
-                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full font-bold text-charcoal shadow-soft">
-                        ₦{{ product.price }}
-                    </div>
-                </figure>
-                <div class="card-body p-6">
-                    <h3 class="card-title font-heading font-bold text-xl uppercase">{{ product.name }}</h3>
-                    <p class="text-gray-500 text-sm line-clamp-2 font-medium">{{ product.description }}</p>
-                    <div class="card-actions justify-between items-center mt-6">
-                        <span class="text-xs font-bold text-chicken-gold uppercase tracking-widest">🔥 {{ product.tag|default:"Hot" }}</span>
-                        <button class="btn btn-primary btn-sm rounded-full text-soft-black font-bold">Add to Bag</button>
-                    </div>
-                </div>
-            </div>
+            {% for item in products %}
+            {% include "shop/includes/menu_card.html" %}
             {% endfor %}
         </div>
     </div>

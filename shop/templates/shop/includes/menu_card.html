@@ -1,7 +1,9 @@
 {% load shop_filters %}
+
+{% with qty=cart|get_pack_qty:item.id %}
 <div id="menu-card-{{item.id}}" class="flex justify-between bg-white rounded-3xl shadow-card overflow-hidden hover:shadow-heavy transition-all duration-300 group" data-aos="fade-up">
     
-    <div class="flex-1 p-5 md:p-8 flex flex-col justify-between">
+    <div class="flex-1 p-5 md:p-8 flex flex-col justify-between gap-4">
         <div>
             <h3 class="text-lg md:text-xl font-heading font-bold text-charcoal leading-tight mb-2 group-hover:text-primary transition-colors">
                 {{ item.name }}
@@ -11,32 +13,48 @@
             </p>
         </div>
         
-        <div class="flex items-center">
+        <div class="flex items-center justify-between">
             <span class="text font-black text-charcoal tracking-tight">
                 ₦ {{ item.price }}
             </span>
+            <!-- Optional badge hook (future use) -->
+            {% if item.is_popular %}
+            <span class="badge badge-primary badge-sm uppercase">
+                Popular
+            </span>
+            {% endif %}
         </div>
     </div>
 
     <div class="relative p-3">
         <div class="size-32 rounded-2xl overflow-hidden relative bg-base-200">
-            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+            {% if item.image %}
+                <img src="{{ item.image.url }}" 
+                     alt="{{ item.name }}"
+                     class="w-full h-full object-cover transition duration-500 group-hover:scale-110" 
+                     loading="lazy">
+            {% else %}
+                <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">
+                    No Image
+                </div>
+            {% endif %}
             
             <div class="absolute bottom-0 right-0 overflow-hidden rounded-tl-2xl shadow-lg" id="btn-container-{{ item.id }}">
                 
-                {% if item.id|stringformat:"d" in cart.items %}
+                {% if qty > 0 %}
                 <div id="qty-ctrl-{{ item.id }}" 
                     class="flex items-center bg-primary text-soft-black h-12 transition-all duration-300">
-                    <button onclick="updateCart('{{ item.id }}', 'decrease', this)" class="px-3 h-full hover:bg-primary-dark transition-colors font-black text-lg">−</button>
-                    <span id="qty-val-{{ item.id }}" class="px-2 font-black min-w-5 text-center">{{ cart|get_item:item.id }}</span>
-                    <button onclick="updateCart('{{ item.id }}', 'increase', this)" class="px-3 h-full hover:bg-primary-dark transition-colors font-black text-lg">+</button>
+                    <button onclick="updateCart('{{ item.id }}', 'decrease', this)" aria-label="Decrease quantity" class="px-3 h-full hover:bg-primary-dark transition-colors font-black text-lg">−</button>
+                    <span id="qty-val-{{ item.id }}" class="px-2 font-black min-w-5 text-center">{{ qty }}</span>
+                    <button onclick="updateCart('{{ item.id }}', 'increase', this)" aria-label="Increase quantity" class="px-3 h-full hover:bg-primary-dark transition-colors font-black text-lg">+</button>
                 </div>
                 {% else %}
                 <button  
                     onclick="updateCart('{{ item.id }}', 'increase', this)"
-                        class="w-12 h-12 bg-charcoal text-white flex items-center justify-center hover:bg-primary hover:text-soft-black transition-all active:scale-95">
+                    aria-label="Add {{ item.name }} to cart"
+                    class="w-12 h-12 bg-charcoal text-white flex items-center justify-center hover:bg-primary hover:text-soft-black transition-all active:scale-95">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
                     </svg>
                 </button>
                 {% endif %}
@@ -45,4 +63,4 @@
         </div>
     </div>
 </div>
-            
+{% endwith %}

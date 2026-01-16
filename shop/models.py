@@ -46,7 +46,9 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_ref = models.CharField(max_length=100, blank=True) # For Paystack
+    delivery_note = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    paid = models.BooleanField(default=False)
 
     class Meta:
         ordering = ["-created_at"]
@@ -55,11 +57,22 @@ class Order(models.Model):
         return f"Order #{self.id} - {self.name}"
 
 
+class OrderPack(models.Model):
+    order = models.ForeignKey(Order, related_name='packs', on_delete=models.CASCADE)
+    name = models.CharField(max_length=100) # e.g., "Pack 1" or "Wedding Guest Pack"
+    
+    def get_total_cost(self):
+        return sum(item.get_cost() for item in self.items.all())
+
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    # Now linked to OrderPack, not directly to Order
+    pack = models.ForeignKey(OrderPack, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(Product, related_name='order_items', on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=1)
-    notes = models.CharField(max_length=255, blank=True) # e.g. "No pepper"
+
+    def get_cost(self):
+        return self.price * self.quantity
 
 class EventInquiry(models.Model):
     STATUS = [('new', 'New'), ('contacted', 'Contacted'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')]

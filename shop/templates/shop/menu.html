@@ -3,16 +3,16 @@
 
 {% block content %}
 <section class="bg-base-200/50 min-h-screen pb-20">
-    <div class="bg-white pt-10 pb-6 border-b border-cream">
+    <div class="sticky top-0 z-20 bg-base-100/95 backdrop-blur border-b border-base-300">
         <div class="container mx-auto px-4">
             <h1 class="text-3xl font-heading font-black uppercase italic tracking-tighter mb-6">
                 Our <span class="text-primary">Menu</span>
             </h1>
 
-            <div role="tablist" class="tabs tabs-box bg-base-200 p-1 rounded-2xl overflow-x-auto flex-nowrap no-scrollbar">
-                <a role="tab" href="{% url "menu" %}" class="tab {% if not request.GET.category %}tab-active{% endif %} font-bold uppercase text-xs tracking-widest px-8 transition-all">All</a>
+            <div role="tablist" class="tabs tabs-box bg-base-200 p-1 rounded-2xl overflow-x-auto flex-nowrap no-scrollbar gap-1">
+                <a role="tab" href="{% url "menu" %}" class="tab {% if not request.GET.category %}tab-active bg-primary text-primary-content shadow-soft{% endif %} font-bold uppercase text-xs tracking-widest px-8 transition-all">All</a>
                 {% for category in categories %}
-                <a role="tab" href="{% url "menu" %}?category={{ category.slug }}"  class="tab {% if request.GET.category == category.slug  %}tab-active{% endif %} font-bold uppercase text-xs tracking-widest px-8 transition-all">{{category.name}}</a>
+                <a role="tab" href="{% url "menu" %}?category={{ category.slug }}"  class="tab {% if request.GET.category == category.slug  %}tab-active bg-primary text-primary-content shadow-soft{% endif %} font-bold uppercase text-xs tracking-widest px-8 transition-all">{{category.name}}</a>
                 {% endfor %}
                 <!-- <a role="tab" class="tab font-bold uppercase text-xs tracking-widest px-8 transition-all">Small Chops</a>
                 <a role="tab" class="tab font-bold uppercase text-xs tracking-widest px-8 transition-all">Platters</a>
@@ -22,30 +22,64 @@
     </div>
 
     <div class="container mx-auto px-4 py-10">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
             {% for item in products %}
             {% include "shop/includes/menu_card.html" %}
-            {% endfor %}
-            <div class="flex bg-white rounded-3xl shadow-card overflow-hidden hover:shadow-heavy transition-all duration-300 group relative" 
-                id="product-card-{{ item.id }}"
-                data-aos="fade-up">
-                
-                
+            {% empty %}
+            <div class="col-span-full flex flex-col items-center justify-center text-center py-20 px-6">
+            
+            <!-- Icon -->
+            <div class="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                class="w-10 h-10 text-primary"
+                >
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M3 3h18M4 7h16M6 7v10a4 4 0 004 4h4a4 4 0 004-4V7M9 11h6M9 15h6" />
+                </svg>
             </div>
+
+            <!-- Text -->
+            <h3 class="font-heading text-xl font-bold mb-2">
+                Nothing cooking here 
+            </h3>
+
+            <p class="text-base-content/60 max-w-sm">
+                We don’t have any items in this category right now.
+                Try switching categories or check back soon.
+            </p>
+
+            <!-- Action -->
+            <a
+                href="{% url 'menu' %}"
+                class="mt-6 inline-flex items-center gap-2 px-6 py-3 rounded-2xl
+                    bg-primary text-primary-content font-bold shadow-soft
+                    hover:shadow-card transition-all"
+            >
+                View All Menu
+                <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+                >
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M9 5l7 7-7 7" />
+                </svg>
+            </a>
+
+            </div>
+
+
+            {% endfor %}
 
         </div>
     </div>
 </section>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    function addToCart(itemId) {
-        // Here you would normally have an AJAX call to Django
-        console.log("Added item " + itemId + " to bag");
-        
-        // This triggers the Django Message logic we built in the base
-        // In a real app, you'd use Vanilla JS to inject a new toast here.
-    }
-</script>
 {% endblock %}
