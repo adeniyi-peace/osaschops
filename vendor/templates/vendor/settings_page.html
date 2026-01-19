@@ -10,6 +10,13 @@
         <p class="text-xs font-bold text-gray-500 uppercase tracking-widest mt-1">Configure your logistics & business levels</p>
     </div>
 
+    {% if store_form.errors or business_formset.errors or delivery_formset.errors %}
+    <div class="alert alert-error rounded-3xl mb-8 shadow-lg border-2 border-white animate-bounce">
+        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <span class="font-black uppercase italic text-xs tracking-widest">Update failed! Please check the red highlights below.</span>
+    </div>
+    {% endif %}
+
     <form method="POST" enctype="multipart/form-data" class="space-y-8">
         {% csrf_token %}
 
@@ -27,13 +34,21 @@
                     <div class="col-span-3">Open Time</div>
                     <div class="col-span-3">Close Time</div>
                 </div>
+
+                {% if business_formset.non_form_errors %}
+                    <div class="p-4 mb-4 bg-error/10 border border-error/20 rounded-2xl text-error font-bold uppercase text-[10px]">
+                        {{ business_formset.non_form_errors }}
+                    </div>
+                {% endif %}
                 
                 {% for form in business_formset %}
+                {{form.errors}}
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-base-200/30 p-4 rounded-2xl border border-transparent hover:border-cream transition-all group">
                     {{ form.id }} 
                     <div class="col-span-3 font-black text-charcoal uppercase text-sm italic">
                         {{ form.day.label }}
                         {{ form.day}}
+                        {% if form.day.errors %}<p class="text-[9px] text-error font-black mt-1">{{ form.day.errors.0 }}</p>{% endif %}
                     </div>
 
                     <div class="col-span-3">
@@ -42,13 +57,16 @@
                              {{ form.is_open }} 
                             <span class="label-text font-bold uppercase text-[10px] status-label">{% if form.instance.is_open %}Open{% else %}Closed{% endif %}</span>
                         </label>
+                        {% if form.is_open.errors %}<p class="text-[9px] text-error font-black mt-1">{{ form.is_open.errors.0 }}</p>{% endif %}
                     </div>
 
                     <div class="col-span-3">
                         {{ form.opening_time }}
+                        {% if form.opening_time.errors %}<p class="text-[9px] text-error font-black mt-1">{{ form.opening_time.errors.0 }}</p>{% endif %}
                     </div>
                     <div class="col-span-3">
                         {{ form.closing_time }}
+                        {% if form.closing_time.errors %}<p class="text-[9px] text-error font-black mt-1">{{ form.closing_time.errors.0 }}</p>{% endif %}
                     </div>
 
                     <div class="closed {% if not form.instance.is_open %}hidden{% endif %} col-span-6">
@@ -63,7 +81,7 @@
                 {% endfor %}
             </div>
         </div>
-
+        {{store_form.errors}}
         <div class="bg-white rounded-[2.5rem] shadow-soft border border-cream overflow-hidden" data-aos="fade-up">
             <div class="p-8 border-b border-cream">
                 <h3 class="font-heading font-black uppercase italic text-lg tracking-tighter">Hero <span class="text-primary">Branding</span></h3>
@@ -74,15 +92,24 @@
                     <div class="form-control">
                         <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Promo Badge</span></label>
                         {{ store_form.hero_badge }}
+                        {% if store_form.hero_badge.errors %}
+                            <p class="text-[9px] text-error font-black uppercase mt-1 italic">{{ store_form.hero_badge.errors.0 }}</p>
+                        {% endif %}
                     </div>
                     <div class="form-control">
                         <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Main Title</span></label>
                         {{ store_form.hero_title}}
+                        {% if store_form.hero_title.errors %}
+                            <p class="text-[9px] text-error font-black uppercase mt-1 italic">{{ store_form.hero_title.errors.0 }}</p>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Hero Subtitle</span></label>
                     {{ store_form.hero_subtitle }}
+                    {% if store_form.hero_subtitle.errors %}
+                        <p class="text-[9px] text-error font-black uppercase mt-1 italic">{{ store_form.hero_subtitle.errors.0 }}</p>
+                    {% endif %}
                 </div>
                 <div class="form-control">
                     <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Hero Image</span></label>
@@ -109,14 +136,22 @@
                     <div class="col-span-4">Fee (₦)</div>
                     <div class="col-span-2 text-right">Action</div>
                 </div>
-
+                {{form.errors}}
                 {% for form in delivery_formset %}
                 <div id="{{ form.prefix }}" class="grid grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl selected-line-item">
                     {{ from.id }}
                     <div class="hidden">{{form.delete}}</div>
-                    <div class="col-span-6">{{ form.name }}</div>
+                    <div class="col-span-6">
+                        {{ form.name }}
+                        {% if form.name.errors %}
+                            <p class="text-[9px] text-error font-black mt-1 uppercase">{{ form.name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
                     <div class="col-span-4">
                         {{ form.fee }}
+                        {% if form.fee.errors %}
+                            <p class="text-[9px] text-error font-black mt-1 uppercase">{{ form.fee.errors.0 }}</p>
+                        {% endif %}
                     </div>
                     <div class="col-span-2 text-right">
                         <button type="button" class="btn btn-ghost btn-circle btn-sm text-error" onclick="deleteLineItem('{{ form.prefix }}')">✕</button>
@@ -149,8 +184,11 @@
                     <label class="label"><span class="label-text font-black uppercase text-[10px] tracking-widest">Order Notification WhatsApp</span></label>
                     <div class="flex gap-2">
                         <span class="bg-base-200 px-4 flex items-center rounded-xl font-bold text-gray-500">+234</span>
-                        <input type="tel" value="8053384458" class="input input-bordered grow rounded-xl bg-base-200 border-none font-bold">
+                        {{ store_form.whatsapp_number }}
                     </div>
+                    {% if store_form.whatsapp_number.errors %}
+                        <p class="text-[9px] text-error font-black mt-2 uppercase">{{ store_form.whatsapp_number.errors.0 }}</p>
+                    {% endif %}
                 </div>
                 <!-- <div class="form-control">
                     <label class="label"><span class="label-text font-black uppercase text-[10px] tracking-widest">Automated Customer Message</span></label>
@@ -178,7 +216,6 @@ function toggleTimeInputs(checkbox) {
     if (checkbox.checked) {
         // Enable inputs
         timeInputs.forEach(input => {
-            input.disabled = false;
             input.closest("div").classList.remove('hidden');
         });
         closedMessage.classList.add("hidden")
@@ -188,7 +225,6 @@ function toggleTimeInputs(checkbox) {
     } else {
         // Disable inputs
         timeInputs.forEach(input => {
-            input.disabled = true;
             input.closest("div").classList.add('hidden');
         });
         closedMessage.classList.remove("hidden")

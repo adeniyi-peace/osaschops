@@ -19,6 +19,7 @@ from cart.cart import Cart
 from .forms import OrderForm
 from shop.models import Order, OrderItem, OrderPack, Product
 from .paystack import checkout
+from vendor.models import DeliveryZone
 
 
 
@@ -166,21 +167,22 @@ class CheckoutView(View):
         form = OrderForm(request.POST)
 
         if form.is_valid():
-            form.total_amount = cart.get_total_cost() 
-            order = form.save()
+            order = form.save(commit=False)
+            order.total_amount = cart.get_total_cost() 
+            order.save()
 
             for pack in cart:
                 order_pack = OrderPack.objects.create(order=order, name=pack.get("pack_id"))
 
                 components_to_create = [] 
                 
-                for items in pack.gett("items"):
+                for items in pack.get("items"):
                     product = items["product"]
                     quantities = items["quantity"]
                     price = items['product'].price
 
                     components_to_create.append(
-                        OrderItem(pack=order_pack, product=product, quantities=quantities, price=price)
+                        OrderItem(pack=order_pack, product=product, quantity=quantities, price=price)
                     )
 
                 OrderItem.objects.bulk_create(components_to_create)

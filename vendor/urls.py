@@ -12,6 +12,7 @@ urlpatterns = [
     path("menu/edit-menu/<int:pk>/", views.AddEditProductView.as_view(), name="edit_menu"),
     path("menu/delete-menu/<int:pk>/", views.ProductDeleteView.as_view(), name="delete_menu"),
     path("settings/", views.SettingsView.as_view(), name="settings"),
-    path("event-inquiry/", views.EventInquiryView.as_view(), name="vendor_event_inquiry")
+    path("event-inquiry/", views.EventInquiryView.as_view(), name="vendor_event_inquiry"),
+    path("store-profile/", views.StoreProfileView.as_view(), name="store_profile")
     
 ]

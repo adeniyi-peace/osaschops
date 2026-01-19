@@ -1,0 +1,108 @@
+{% extends 'vendor_base.html' %}
+{% load static %}
+
+{% block vendor_content %}
+<div class="max-w-4xl mx-auto space-y-10">
+    
+    <div class="bg-charcoal rounded-[3rem] p-10 text-white relative overflow-hidden shadow-heavy">
+        <div class="relative z-10 flex flex-col md:flex-row items-center gap-8">
+            <div class="w-32 h-32 rounded-4xl bg-white p-2 overflow-hidden border-4 border-primary/20">
+                <img src="{{ profile.logo.url|default:'https://ui-avatars.com/api/?name=Osas+Chops' }}" 
+                     class="w-full h-full object-cover rounded-3xl" alt="Store Logo">
+            </div>
+
+            <div class="grow text-center md:text-left">
+                <h1 class="text-4xl font-heading font-black uppercase italic tracking-tighter">{{ profile.store_name }}</h1>
+                <div class="flex items-center justify-center md:justify-start gap-4 mt-3">
+                    <div class="flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full border border-white/10">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full {% if profile.is_open %}bg-success{% else %}bg-error{% endif %} opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 {% if profile.is_open %}bg-success{% else %}bg-error{% endif %}"></span>
+                        </span>
+                        <span class="text-[10px] font-black uppercase tracking-widest text-gray-300">
+                            {% if profile.is_open %}Currently accepting orders{% else %}Store is closed{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col items-center gap-3 bg-white/5 p-6 rounded-3xl border border-white/10">
+                <p class="text-[10px] font-black uppercase tracking-widest text-primary">Live Switch</p>
+                <input type="checkbox" class="toggle toggle-primary toggle-lg scale-125" 
+                       {% if profile.is_open %}checked{% endif %} 
+                       onchange="toggleStoreStatus()">
+            </div>
+        </div>
+        
+        <div class="absolute right-0 top-0 opacity-5 pointer-events-none">
+            <svg width="400" height="400" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7V9H5V2H3V9C3 11.12 4.66 12.84 6.75 12.97V22H9.25V12.97C11.34 12.84 13 11.12 13 9V2H11V9ZM16 6V14H18.5V22H21V2C18.24 2 16 4.24 16 6Z"/></svg>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white p-8 rounded-4xl border border-cream shadow-soft">
+            <h3 class="text-lg font-heading font-black uppercase italic mb-8 border-b border-cream pb-4">Store <span class="text-primary">Info</span></h3>
+            <div class="space-y-6">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Display Name</p>
+                    <p class="text-xl font-black text-charcoal uppercase italic">{{ profile.name }}</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">WhatsApp Support</p>
+                    <p class="text-xl font-black text-charcoal">{{ profile.whatsapp_number|default:"Not Set" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-8 rounded-4xl border border-cream shadow-soft">
+            <h3 class="text-lg font-heading font-black uppercase italic mb-8 border-b border-cream pb-4">Operational <span class="text-primary">Hours</span></h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-5 bg-base-200 rounded-3xl border border-cream/50">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Opens At</p>
+                    <p class="text-2xl font-black text-charcoal tracking-tighter">{{ profile.opening_time|default:"08:00 AM" }}</p>
+                </div>
+                <div class="p-5 bg-base-200 rounded-3xl border border-cream/50">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Closes At</p>
+                    <p class="text-2xl font-black text-charcoal tracking-tighter">{{ profile.closing_time|default:"09:00 PM" }}</p>
+                </div>
+            </div>
+            <div class="mt-6 flex items-center gap-3 p-3 bg-primary/5 rounded-2xl border border-primary/10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <p class="text-[10px] font-bold text-charcoal/60 leading-tight uppercase">To edit these details, please go to settings.</p>
+            </div>
+        </div>
+
+        <div class="flex justify-center pt-6">
+            <a href="" class="btn btn-ghost font-black uppercase italic text-xs tracking-widest gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                Return to Dashboard
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleStoreStatus() {
+        // Toggle opacity to give immediate feedback
+        const hero = document.querySelector('.bg-charcoal');
+        hero.style.opacity = '0.8';
+
+        fetch('', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: 'toggle_status=true'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === 'success') {
+                location.reload();
+            }
+        });
+    }
+</script>
+{% endblock %}

@@ -25,6 +25,7 @@ class OrderForm(forms.ModelForm):
             }),
             "delivery_zone" : forms.Select(attrs={
                 "class":"select select-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full",
+                "onchange":"handleDeliveryZoneChange(this)"
             },),
             "payment_ref" : forms.RadioSelect(attrs={
                 "class":"radio radio-primary"

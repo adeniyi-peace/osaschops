@@ -71,7 +71,7 @@
                         <span class="badge badge-sm badge-primary indicator-item" id="cart_item_number">{{ cart|length }}</span>
                     </div>
                 </button>
-                <a href={% url "menu" %} class="btn btn-primary text-soft-black font-bold rounded-full px-8 shadow-soft hover:shadow-heavy transition-soft hidden md:flex">Order Now</a>
+                <!-- <a href={% url "menu" %} class="btn btn-primary text-soft-black font-bold rounded-full px-8 shadow-soft hover:shadow-heavy transition-soft hidden md:flex">Order Now</a> -->
             </div>
         </div>
     </header>
@@ -233,6 +233,8 @@
     async function renderDrawerItems(button) {
         const listContainer = document.getElementById('drawer-items-list');
         button.disabled = true
+
+        toggleDrawer(true);
         
          try {
             response = await fetch(`/cart/cart-drawer/`)
@@ -243,10 +245,14 @@
             if (data.success === true) {
                 listContainer.innerHTML = data.html_drawer;
                 document.getElementById('drawer-total').innerHTML = `₦${data.total}`;
-                toggleDrawer(true);
             }
         } catch (error) {
             console.log("Error:". error)
+            listContainer.innerHTML = `<div class="modal-box text-center">
+                    <p class="text-error font-bold">Failed to load content.</p>
+                    <p class="text-error font-bold">Please ensure you are connected to the internet.</p>
+                    <button class="btn btn-sm mt-4" onclick="toggleDrawer(false)">Close</button>
+                </div>`
         } finally {
             button.disabled = false
         }

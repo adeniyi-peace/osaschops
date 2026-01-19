@@ -15,6 +15,14 @@
             </p>
         </div>
 
+        {% if form.non_field_errors %}
+            <div class="lg:col-span-3 mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-xl">
+                {% for error in form.non_field_errors %}
+                    <p class="text-red-700 font-black uppercase italic text-xs tracking-tight">{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <div class="max-w-4xl mx-auto bg-white rounded-[3rem] shadow-heavy overflow-hidden border border-cream/50" data-aos="zoom-in">
             <div class="grid lg:grid-cols-5">
                 
@@ -53,12 +61,16 @@
                         <div class="form-control">
                             <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Full Name</span></label>
                             {{form.name}}
-                            {% if form.name.errors %}<div class="text-red-500">{{ form.name.errors }}</div> {% endif %}
+                            {% if form.name.errors %}
+                                <label class="label p-0 mt-1"><span class="label-text-alt text-red-600 font-black uppercase italic text-[9px] tracking-tighter">{{ form.name.errors.0 }}</span></label>
+                            {% endif %}
                         </div>
                         <div class="form-control">
                             <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Phone Number</span></label>
                             {{form.phone}}
-                            {% if form.phone.errors %}<div class="text-red-500">{{ form.phone.error }}</div> {% endif %}
+                            {% if form.phone.errors %}
+                                <label class="label p-0 mt-1"><span class="label-text-alt text-red-600 font-black uppercase italic text-[9px] tracking-tighter">{{ form.phone.errors.0 }}</span></label>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -66,31 +78,40 @@
                         <div class="form-control">
                             <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Event Date</span></label>
                             {{form.event_date}}
-                            {% if form.event_date.errors %}<div class="text-red-500">{{ form.event_date.errors }}</div> {% endif %}
+                            {% if form.event_date.errors %}
+                                <label class="label p-0 mt-1"><span class="label-text-alt text-red-600 font-black uppercase italic text-[9px] tracking-tighter">{{ form.event_date.errors.0 }}</span></label>
+                            {% endif %}
                         </div>
                         <div class="form-control">
                             <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Guest Count (Est.)</span></label>
                             {{form.guest_count}}
-                            {% if form.guest_count.errors %}<div class="text-red-500">{{ form.guest_count.errors }}</div> {% endif %}
+                            {% if form.guest_count.errors %}
+                                <label class="label p-0 mt-1"><span class="label-text-alt text-red-600 font-black uppercase italic text-[9px] tracking-tighter">{{ form.guest_count.errors.0 }}</span></label>
+                            {% endif %}
                         </div>
                     </div>
 
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Event Location</span></label>
                         {{form.location}}
-                        {% if form.location.errors %}<div class="text-red-500">{{ form.location.errors }}</div> {% endif %}
+                        {% if form.location.errors %}
+                            <label class="label p-0 mt-1"><span class="label-text-alt text-red-600 font-black uppercase italic text-[9px] tracking-tighter">{{ form.location.errors.0 }}</span></label>
+                        {% endif %}
                     </div>
 
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Package Choice</span></label>
                         {{form.package_choice}}
-                        {% if form.package_choice.errors %}<div class="text-red-500">{{ form.package_choice.errors }}</div> {% endif %}
-                    </div>
+                        {% if form.package_choice.errors %}
+                            <label class="label p-0 mt-1"><span class="label-text-alt text-red-600 font-black uppercase italic text-[9px] tracking-tighter">{{ form.package_choice.errors.0 }}</span></label>
+                        {% endif %}
 
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Additional Notes</span></label>
                         {{form.notes}}
-                        {% if form.notes.errors %}<div class="text-red-500">{{ form.notes.errors }}</div> {% endif %}
+                        {% if form.notes.errors %}
+                            <label class="label p-0 mt-1"><span class="label-text-alt text-red-600 font-black uppercase italic text-[9px] tracking-tighter">{{ form.notes.errors.0 }}</span></label>
+                        {% endif %}
                     </div>
 
                     <button type="submit" class="btn btn-primary w-full rounded-full btn-lg font-black uppercase italic shadow-lg shadow-orange-500/20 mt-4">

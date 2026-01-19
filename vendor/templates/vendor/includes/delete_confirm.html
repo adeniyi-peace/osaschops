@@ -23,7 +23,7 @@
         </p>
     </div>
 
-    <form method="POST" action="{% url 'delete-item' item.pk %}" class="modal-action flex justify-center gap-3 mt-8">
+    <form method="POST" action="{% url 'delete_menu' item.pk %}" class="modal-action flex justify-center gap-3 mt-8">
         {% csrf_token %}
         <button type="button" onclick="delete_modal.close()" class="btn btn-ghost rounded-2xl font-bold uppercase text-xs grow">
             Keep it

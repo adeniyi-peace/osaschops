@@ -68,7 +68,7 @@
                     <td class="text-right">
                         <div class="flex justify-end gap-2">
                             <button onclick="openFormModal('{{item.id}}')" class="btn btn-ghost btn-circle btn-sm"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg></button>
-                            <button class="btn btn-ghost btn-circle btn-sm text-error"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                            <button onclick="openDeleteModal('{{item.id}}')" class="btn btn-ghost btn-circle btn-sm text-error"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                         </div>
                     </td>
                 </tr>
@@ -140,10 +140,8 @@
 
         try {
             const response = await fetch(url);
-            const html = await response.text();
-            
-            // 3. Inject the partial
-            container.innerHTML = html;
+            const data = await response.json();
+            if (data.success)  container.innerHTML = data.html;
         } catch (error) {
             container.innerHTML = `
                 <div class="modal-box text-center">
@@ -163,11 +161,11 @@
 
         try {
             // Fetch the delete confirmation partial from Django
-            const response = await fetch(`/vendor/menu/delete-partial/${productId}/`);
+            const response = await fetch(`/vendor/menu/delete-menu/${productId}/`);
             if (!response.ok) throw new Error('Failed to fetch');
             
-            const html = await response.text();
-            container.innerHTML = html;
+            const data = await response.json();
+            if (data.success) container.innerHTML = data.html;
         } catch (error) {
             container.innerHTML = `
                 <div class="modal-box text-center">
@@ -206,7 +204,7 @@
             return response.json()
         }).then(data => {
             if (data.success) {
-                location.reload()
+                
             }
             else {
                 container.innerHTML = data.html

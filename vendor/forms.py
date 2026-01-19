@@ -89,14 +89,14 @@ class BusinessDayFormSet(BaseOpenFormset):
             day_index = form.data.get(form.prefix + "-day") or form.initial.get("day")
 
             if day_index is not None:
-                form.fields["day"].label = BusinessDay.DAYS[day_index][1]
+                form.fields["day"].label = BusinessDay.DAYS[int(day_index)][1]
                 # form.fields["day"].label = BusinessDay.DAYS(day_index).label
 
 
 class StoreSettingForm(forms.ModelForm):
     class Meta:
         model = StoreSetting
-        fields = "__all__"
+        exclude = ["name"]
         widgets = {
             "hero_badge":forms.TextInput(attrs={
                 "class":"input input-bordered rounded-xl bg-base-200 border-none font-bold"
@@ -110,7 +110,7 @@ class StoreSettingForm(forms.ModelForm):
             "hero_image":forms.FileInput(attrs={
                 "class":"file-input file-input-bordered file-input-primary w-full rounded-xl bg-base-200 border-none"
             }),
-            "whatapp_number":forms.TextInput({
+            "whatsapp_number":forms.TextInput({
                 "class":"input input-bordered grow rounded-xl bg-base-200 border-none font-bold"
             })
         }

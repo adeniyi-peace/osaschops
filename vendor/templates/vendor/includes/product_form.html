@@ -1,30 +1,60 @@
 <div class="modal-box bg-white rounded-[2.5rem] p-8 max-w-2xl border border-cream">
-    <form method="POST" action="{% if form.instance.pk %}{% url 'edit_menu' form.instance.pk %}{% else %}{% url 'add_menu' %}{% endif %}" enctype="multipart/form-data" onsubmit="handleSubmit">
+    <form method="POST" action="{% if form.instance.pk %}{% url 'edit_menu' form.instance.pk %}{% else %}{% url 'add_menu' %}{% endif %}" enctype="multipart/form-data" onsubmit="return handleSubmit(event)">
         {% csrf_token %}
         <h3 class="font-heading font-black uppercase italic text-2xl mb-6">
             {% if form.instance.pk %}Edit <span class="text-primary">Chops</span>{% else %}Add New <span class="text-primary">Chops</span>{% endif %}
         </h3>
 
+        {% if form.non_field_errors %}
+        <div class="mb-6 p-4 bg-error/10 border border-error/20 rounded-2xl">
+            {% for error in form.non_field_errors %}
+                <p class="text-error font-black uppercase italic text-xs flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    {{ error }}
+                </p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="form-control col-span-2 md:col-span-1">
                 <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Item Name</span></label>
                 {{ form.name }}
+                {% if form.name.errors %}
+                    <label class="label pb-0"><span class="label-text-alt text-error font-bold uppercase text-[9px]">{{ form.name.errors}}</span></label>
+                {% endif %}
             </div>
+
             <div class="form-control col-span-2 md:col-span-1">
                 <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Category</span></label>
                 {{ form.category }}
+                {% if form.category.errors %}
+                    <label class="label pb-0"><span class="label-text-alt text-error font-bold uppercase text-[9px]">{{ form.category.errors}}</span></label>
+                {% endif %}
             </div>
+
             <div class="form-control">
                 <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Price (₦)</span></label>
                 {{ form.price }}
+                {% if form.price.errors %}
+                    <label class="label pb-0"><span class="label-text-alt text-error font-bold uppercase text-[9px]">{{ form.price.errors}}</span></label>
+                {% endif %}
             </div>
+
             <div class="form-control">
                 <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Image</span></label>
                 {{ form.image }}
+                {% if form.image.errors %}
+                    <label class="label pb-0"><span class="label-text-alt text-error font-bold uppercase text-[9px]">{{ form.image.errors}}</span></label>
+                {% endif %}
             </div>
+
             <div class="form-control col-span-2">
                 <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Description</span></label>
                 {{ form.description }}
+                {% if form.description.errors %}
+                    <label class="label pb-0"><span class="label-text-alt text-error font-bold uppercase text-[9px]">{{ form.description.errors}}</span></label>
+                {% endif %}
             </div>
         </div>
 

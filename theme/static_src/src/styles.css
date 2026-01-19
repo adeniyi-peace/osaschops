@@ -57,6 +57,13 @@
   --color-error: #ef4444;
 }
 
+.form-control:has(.text-error) input, 
+.form-control:has(.text-error) select, 
+.form-control:has(.text-error) textarea {
+    border-color: oklch(var(--er)) !important;
+    background-color: oklch(var(--er) / 0.05);
+}
+
 
 
 /**

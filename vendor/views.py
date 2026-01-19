@@ -110,11 +110,11 @@ class SalesReportView(TemplateView):
         # 4. Category Performance (For the Progress Bars)
         # We find how many items were sold per category
         category_data = Category.objects.annotate(
-            sold_count=Count('products__orderitem')
+            sold_count=Count('products__order_items')
         ).order_by('-sold_count')[:3]
 
         # 5. Loyal Customers (Table Logic)
-        loyal_customers = Order.objects.values('customer_email', 'customer_name') \
+        loyal_customers = Order.objects.values('email', 'name') \
             .annotate(order_count=Count('id'), total_spend=Sum('total_amount')) \
             .order_by('-total_spend')[:5]
 
@@ -194,7 +194,15 @@ class AddEditProductView(View):
         else:
             form = ProductForm()
             
-        return render(request, 'vendor/includes/product_form.html', {'form': form})
+        context = {
+            "form":form
+        }
+
+        html = render_to_string(
+            'vendor/includes/product_form.html', context, request
+        )
+
+        return JsonResponse({'success': True, 'html': html})
     
     def post(self, request, pk=None):
         if pk:
@@ -206,7 +214,7 @@ class AddEditProductView(View):
             if form.is_valid():
                 form.save()
 
-                return JsonResponse({'success': True, })
+                return redirect("vendor_menu")
 
         context = {
             "form":form
@@ -216,14 +224,18 @@ class AddEditProductView(View):
             'vendor/includes/product_form.html', context, request
         )
 
-        return JsonResponse({'success': False, 'html': html}, status=400)
+        return JsonResponse({'success': False, 'html': html})
                         
 
 class ProductDeleteView(View):
     """View to return the delete confirmation partial"""
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
-        return render(request, 'vendor/includes/delete_confirm.html', {'item': product})
+
+        html = render_to_string(
+            'vendor/includes/delete_confirm.html', {'item': product}, request
+        )
+        return JsonResponse({'success': True, 'html': html})
     
     def post(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
@@ -264,7 +276,7 @@ class SettingsView(View):
             delivery_formset.save()
             store_form.save()
 
-            return redirect("...")
+            return redirect("dashboard")
 
         context = {
             "business_formset":business_formset,
@@ -273,7 +285,7 @@ class SettingsView(View):
             "store_settings":store_settings,
         }
 
-        return render(request, "vendor/settings.html", context)
+        return render(request, "vendor/settings_page.html", context)
         
 
 class EventInquiryView(View):
@@ -291,3 +303,19 @@ class EventInquiryView(View):
 
         return render(request, "vendor/event_inquiry_page.html", context)
 
+
+
+class StoreProfileView(View):
+    def get(self, request):
+        profile = StoreSetting.objects.first() # Assuming one vendor for now
+        day = timezone.now()
+        context = {'profile': profile}
+        return render(request, "vendor/store_profile.html", context)
+
+    def post(self, request):
+        profile = StoreSetting.objects.first()
+        # Toggle Store Status (Open/Closed) via AJAX or Form
+        if 'toggle_status' in request.POST:
+            profile.is_open = not profile.is_open
+            profile.save()
+            return JsonResponse({'status': 'success', 'is_open': profile.is_open})

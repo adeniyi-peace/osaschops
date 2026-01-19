@@ -3,6 +3,7 @@ from django.utils.text import slugify
 
 class StoreSetting(models.Model):
     name = models.CharField(max_length=100, default="Osaschops")
+    logo = models.ImageField(upload_to='logos/', blank=True)
     whatsapp_number = models.CharField(max_length=20, help_text="Format: 2348053384458")
 
     hero_badge = models.CharField(max_length=50, default="✨ NEW MONTH, NEW LEVELS!")
@@ -15,7 +16,6 @@ class StoreSetting(models.Model):
 
 class BusinessDay(models.Model):
     DAYS = [(0, 'Monday'), (1, 'Tuesday'), (2, 'Wednesday'), (3, 'Thursday'), (4, 'Friday'), (5, 'Saturday'), (6, 'Sunday')]
-    store = models.ForeignKey(StoreSetting, related_name='hours', on_delete=models.CASCADE)
     day = models.IntegerField(choices=DAYS, unique=True)
     is_open = models.BooleanField(default=True)
     opening_time = models.TimeField(default="09:00")
