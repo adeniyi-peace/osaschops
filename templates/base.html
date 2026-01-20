@@ -42,8 +42,8 @@
                 <a href="/" class="text-xl font-heading font-black tracking-tight uppercase italic">
                     Osas<span class="text-primary">Chops</span>
                 </a>
-                <div class="flex items-center gap-2">
-                    {% with open_status=business_open %} 
+                <div class="flex items-center gap-2 px-2">
+                    {% business_open as open_status %} 
                         {% if open_status.0 %}
                             <span class="relative flex h-3 w-3">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
@@ -54,7 +54,7 @@
                             <span class="h-3 w-3 rounded-full bg-error"></span>
                             <span class="text-[10px] font-black uppercase text-gray-400 tracking-widest">Closed</span>
                         {% endif %}
-                    {% endwith %}
+                    
                 </div>
             </div>
             

@@ -15,15 +15,12 @@ def get_current_day_and_time(timezone_name=settings.TIME_ZONE):
     return current_day, current_time
 
 def is_store_currently_open(model):
-    # 1. Check the Master Switch first
-    if not model.is_open:
-        return False, "The model is manually closed by the owner."
 
     current_day_index, current_time = get_current_day_and_time()
 
     # 3. Look up today's schedule from the database
     try:
-        today_schedule = model.hours.get(day=current_day_index)
+        today_schedule = model.get(day=current_day_index)
     except model.hours.model.DoesNotExist:
         return False, "Schedule not set for today."
 
@@ -47,14 +44,14 @@ def is_store_currently_open(model):
         hours = model.filter(day=day, is_open=True).first()
 
         if hours:
-            if i == 0 and current_time < hours.open_time:
-                return False, f"We open at {hours.open_time.strftime('%I:%M %p')} today."
+            if i == 0 and current_time < hours.opening_time:
+                return False, f"We open at {hours.opening_time.strftime('%I:%M %p')} today."
             
             elif i == 1:
-                return False, f"We open tommorow at {hours.open_time.strftime('%I:%M %p')}."
+                return False, f"We open tommorow at {hours.opening_time.strftime('%I:%M %p')}."
             
             elif i > 1:
-                return False, f"We open {hours.get_day_display} at {hours.open_time.strftime('%I:%M %p')}."
+                return False, f"We open {hours.get_day_display} at {hours.opening_time.strftime('%I:%M %p')}."
 
 
 def get_next_day(number, timezone_name="Africa/lagos"):

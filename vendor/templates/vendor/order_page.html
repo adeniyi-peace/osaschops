@@ -11,7 +11,7 @@
       Live kitchen queue
     </p>
 
-  <span class="badge badge-outline badge-primary font-black text-xs">
+  <span id="number-of-active-order" class="badge badge-outline badge-primary font-black text-xs">
     {{ active_orders|length }} Orders
   </span>
 </div>
@@ -50,90 +50,7 @@
         
         <tbody>
             {% for order in active_orders %}
-            <tr class="group border-none shadow-sm hover:shadow-md transition-all" id="order-row-{{ order.id }}">
-                <td class="rounded-l-2xl border-none">
-                    <div class="flex items-center gap-3">
-                        <button onclick="toggleDetails('{{ order.id }}')" class="btn btn-circle btn-xs btn-ghost text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition-transform duration-300" id="icon-{{ order.id }}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                        </button>
-                        <div>
-                            <span class="font-black text-charcoal text-base">#{{ order.id }}</span>
-                            <p class="text-[10px] font-bold text-gray-500 uppercase">{{ order.name }} • {{ order.created_at|timesince }} ago</p>
-                        </div>
-                    </div>
-                </td>
-                
-                <td class="hidden md:table-cell border-none">
-                    <span class="text-[10px] font-black uppercase text-charcoal tracking-tighter italic">
-                        {{ order.delivery_zone.name|default:"Pickup" }}
-                    </span>
-                </td>
-
-                <td class="hidden sm:table-cell border-none">
-                    {% if order.payment_ref == "Pay on Delivery" %}
-                        <span class="badge badge-error badge-outline font-black text-[9px] uppercase tracking-tighter">COD</span>
-                    {% else %}
-                        <span class="badge badge-success font-black text-[9px] uppercase tracking-tighter text-white">Paid</span>
-                    {% endif %}
-                </td>
-
-                <td class="border-none">
-                    <span class="badge badge-ghost font-black text-[10px] uppercase italic text-gray-500">
-                        {{ order.get_status_display }}
-                    </span>
-                </td>
-
-                <td class="text-right rounded-r-2xl border-none">
-                    <div class="flex justify-end gap-2">
-                        <a href="{% url 'order_receipt' order.id %}" target="_blank" class="btn btn-square btn-sm bg-white border-cream hover:bg-primary group/btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 group-hover/btn:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
-                        </a>
-                        
-                        {% if order.status == 'pending' %}
-                            <button onclick="updateOrderStatus('{{ order.id }}', 'preparing')" class="btn btn-sm btn-success text-white font-black uppercase text-[10px] italic">Start Prep</button>
-                        {% elif order.status == 'preparing' %}
-                            <button onclick="updateOrderStatus('{{ order.id }}', 'ready')" class="btn btn-sm btn-info text-white font-black uppercase text-[10px] italic">Ready</button>
-                        {% elif order.status == 'ready' %}
-                            <button onclick="updateOrderStatus('{{ order.id }}', 'shipped')" class="btn btn-sm btn-primary text-soft-black font-black uppercase text-[10px] italic">Dispatch</button>
-                        {% endif %}
-                    </div>
-                </td>
-            </tr>
-
-            <tr id="details-{{ order.id }}" class="hidden">
-                <td colspan="5" class="bg-base-100 rounded-2xl border-2 border-dashed border-cream/50 p-0 overflow-hidden">
-                    <div class="p-6 flex flex-col md:flex-row gap-8">
-                        <div class="grow space-y-4">
-                            {% for pack in order.packs.all %}
-                            <div class="pack-container">
-                                <h4 class="text-[11px] font-black uppercase text-primary border-b border-cream pb-1 mb-3">{{ pack.name }}</h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {% for item in pack.items.all %}
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-6 h-6 flex-none rounded bg-charcoal text-primary text-[10px] font-black flex items-center justify-center">{{ item.quantity }}</span>
-                                        <span class="text-xs font-bold text-charcoal uppercase leading-tight">{{ item.product.name }}</span>
-                                    </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="w-full md:w-64 flex-none space-y-4">
-                            {% if order.delivery_note %}
-                            <div class="bg-error/5 p-4 rounded-2xl border border-error/20">
-                                <p class="text-[9px] font-black text-error uppercase mb-1">Kitchen Note</p>
-                                <p class="text-[11px] italic font-medium text-charcoal leading-relaxed">{{ order.delivery_note }}</p>
-                            </div>
-                            {% endif %}
-                            <div class="bg-cream/30 p-4 rounded-2xl border border-cream text-[11px]">
-                                <p class="font-bold text-charcoal mb-1 uppercase tracking-tighter">Contact: {{ order.phone }}</p>
-                                <p class="text-gray-500 leading-tight uppercase">{{ order.address }}</p>
-                            </div>
-                        </div>
-                    </div>
-                </td>
-            </tr>
+            {% include "vendor/includes/order_card.html" %}
             {% empty %}
             <tr>
                 <td colspan="5" class="text-center py-20">
@@ -167,6 +84,7 @@
     function updateOrderStatus(orderId, status) {
         const row = document.getElementById(`order-row-${orderId}`);
         const details = document.getElementById(`details-${orderId}`);
+        const csrftoken = getCSRFCookie()
         
         row.style.opacity = '0.5';
         if (details) details.style.opacity = '0.5';
@@ -175,7 +93,7 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
+                'X-CSRFToken': csrftoken
             },
             body: JSON.stringify({ status: status })
         })
@@ -233,6 +151,44 @@
                 if (detailsRow) detailsRow.classList.add('hidden');
             }
         }
+    }
+
+    // This function matches the check in the global script above
+    function refreshOrderTable(order) {
+        const tableBody = document.querySelector("tbody");
+        
+        // Clear "No Active Orders" if it exists
+        if(tableBody.innerText.includes("No Active Orders")) tableBody.innerHTML = "";
+        
+
+        // 2. Insert the HTML string as actual DOM elements
+        // 'afterbegin' puts it at the very top of the <tbody>
+        tableBody.insertAdjacentHTML('afterbegin', order.html);
+
+        // 3. Target the newly injected row
+        const newRow = tableBody.firstElementChild;
+
+
+        const newOrderElement = tableBody.firstElementChild;
+
+        newOrderElement.classList.add("new-order-flash");
+
+        // 6. Update the Order Count badge at the top of the page
+        const badge = document.querySelector("#number-of-active-order");
+        if (badge) {
+            let currentCount = parseInt(badge.innerText) || 0;
+            badge.innerText = `${currentCount + 1} Orders`;
+        }
+
+        // newOrderElement.classList.add("new-order-flash", "bg-orange-50", "border-primary");
+        // // 4. Remove the animation after exactly 5 seconds
+        // setTimeout(() => {
+        //     newOrderElement.classList.remove("animate-pulse", "bg-orange-50", "border-primary");
+            
+        //     // Optional: Add a smooth transition class so the color fade is gentle
+        //     newOrderElement.classList.add("transition-colors", "duration-1000");
+        // }, 5000);
+        
     }
 </script>
 {% endblock %}

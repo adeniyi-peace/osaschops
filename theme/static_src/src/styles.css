@@ -64,6 +64,17 @@
     background-color: oklch(var(--er) / 0.05);
 }
 
+@keyframes new-order-glow {
+    0% { background-color: rgba(255, 165, 0, 0.2); } /* Primary color low opacity */
+    50% { background-color: rgba(255, 165, 0, 0.05); }
+    100% { background-color: transparent; }
+}
+
+.new-order-flash {
+    animation: new-order-glow 1s ease-in-out infinite;
+    border-left: 4px solid #CC5500 !important; /* Thick brand-color border */
+}
+
 
 
 /**
