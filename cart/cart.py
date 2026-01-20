@@ -34,8 +34,13 @@ class Cart(object):
                 "pack_1": {"name": "Pack 1", "items": {}}
             }
         self.cart = cart
+        
         # Track which pack the user is currently editing
-        self.active_pack_id = self.session.get('active_pack_id', 'pack_1')
+        active_pack_id = self.session.get('active_pack_id')
+        if not active_pack_id:
+            active_pack_id = self.session["active_pack_id"] = "pack_1"
+
+        self.active_pack_id = active_pack_id
 
     
     def __iter__(self):
@@ -142,6 +147,7 @@ class Cart(object):
 
     def clear(self):
         del self.session[settings.CART_SESSION_ID]
+        del self.session["active_pack_id"]
         self.session.modified = True
 
     def get_total_cost(self):

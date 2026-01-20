@@ -112,7 +112,10 @@ class StoreSettingForm(forms.ModelForm):
             }),
             "whatsapp_number":forms.TextInput({
                 "class":"input input-bordered grow rounded-xl bg-base-200 border-none font-bold"
-            })
+            }),
+            "logo":forms.FileInput(attrs={
+                "class":"file-input file-input-bordered file-input-primary w-full rounded-xl bg-base-200 border-none"
+            }),
         }
 
 class DeliveryZoneForm(forms.ModelForm):

@@ -3,7 +3,7 @@ from django.utils.text import slugify
 
 class StoreSetting(models.Model):
     name = models.CharField(max_length=100, default="Osaschops")
-    logo = models.ImageField(upload_to='logos/', blank=True)
+    logo = models.ImageField(upload_to='logos/', blank=True, null=True)
     whatsapp_number = models.CharField(max_length=20, help_text="Format: 2348053384458")
 
     hero_badge = models.CharField(max_length=50, default="✨ NEW MONTH, NEW LEVELS!")

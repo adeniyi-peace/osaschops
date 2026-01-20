@@ -136,11 +136,12 @@
                     <div class="col-span-4">Fee (₦)</div>
                     <div class="col-span-2 text-right">Action</div>
                 </div>
-                {{form.errors}}
+                
                 {% for form in delivery_formset %}
+                {{form.errors}}
                 <div id="{{ form.prefix }}" class="grid grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl selected-line-item">
-                    {{ from.id }}
-                    <div class="hidden">{{form.delete}}</div>
+                    {{ form.id }}
+                    <div class="hidden">{{form.DELETE}}</div>
                     <div class="col-span-6">
                         {{ form.name }}
                         {% if form.name.errors %}
@@ -164,7 +165,7 @@
 
             <div id="{{ delivery_formset.empty_form.prefix }}" class="empty-form hidden grid-cols-12 gap-4 items-center bg-base-200/50 p-4 rounded-2xl selected-line-item">
                 {{ delivery_formset.empty_form.id }}
-                <div class="hidden">{{delivery_formset.empty_form.delete}}</div>
+                <div class="hidden">{{delivery_formset.empty_form.DELETE}}</div>
                 <div class="col-span-6 font-bold text-sm uppercase">{{ delivery_formset.empty_form.name }}</div>
                 <div class="col-span-4">
                     {{ delivery_formset.empty_form.fee }}
@@ -188,6 +189,18 @@
                     </div>
                     {% if store_form.whatsapp_number.errors %}
                         <p class="text-[9px] text-error font-black mt-2 uppercase">{{ store_form.whatsapp_number.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-black uppercase text-[10px] text-gray-400">Logo</span></label>
+                    {% if store_setting.logo %}
+                        <div class="mb-2">
+                            <img src="{{ store.logo.url }}" class="w-32 h-20 object-cover rounded-lg border border-cream shadow-sm">
+                        </div>
+                    {% endif %}
+                    {{ store_form.logo }}
+                    {% if store_form.logo.errors %}
+                        <p class="text-[9px] text-error font-black mt-2 uppercase">{{ store_form.logo.errors.0 }}</p>
                     {% endif %}
                 </div>
                 <!-- <div class="form-control">
