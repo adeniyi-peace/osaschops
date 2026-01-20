@@ -59,11 +59,11 @@
         </div>
         <div class="item-row">
             <span>DELIVERY:</span>
-            <span>₦2,500</span>
+            <span>₦{{ order.delivery_zone.fee }}</span>
         </div>
         <div class="item-row" style="font-size: 18px; margin-top: 2mm;">
             <span>TOTAL:</span>
-            <span>₦{{ order.total_amount|add:2500 }}</span>
+            <span>₦{{ order.total_amount|add:order.delivery_zone.fee }}</span>
         </div>
     </div>
 

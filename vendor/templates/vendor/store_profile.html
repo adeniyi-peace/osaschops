@@ -16,11 +16,11 @@
                 <div class="flex items-center justify-center md:justify-start gap-4 mt-3">
                     <div class="flex items-center gap-2 px-4 py-1.5 bg-white/10 rounded-full border border-white/10">
                         <span class="relative flex h-2 w-2">
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full {% if profile.is_open %}bg-success{% else %}bg-error{% endif %} opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 {% if profile.is_open %}bg-success{% else %}bg-error{% endif %}"></span>
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full {% if business_day.is_open %}bg-success{% else %}bg-error{% endif %} opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 {% if business_day.is_open %}bg-success{% else %}bg-error{% endif %}"></span>
                         </span>
                         <span class="text-[10px] font-black uppercase tracking-widest text-gray-300">
-                            {% if profile.is_open %}Currently accepting orders{% else %}Store is closed{% endif %}
+                            {% if business_day.is_open %}Currently accepting orders{% else %}Store is closed{% endif %}
                         </span>
                     </div>
                 </div>
@@ -29,7 +29,7 @@
             <div class="flex flex-col items-center gap-3 bg-white/5 p-6 rounded-3xl border border-white/10">
                 <p class="text-[10px] font-black uppercase tracking-widest text-primary">Live Switch</p>
                 <input type="checkbox" class="toggle toggle-primary toggle-lg scale-125" 
-                       {% if profile.is_open %}checked{% endif %} 
+                       {% if business_day.is_open %}checked{% endif %} 
                        onchange="toggleStoreStatus()">
             </div>
         </div>
@@ -59,11 +59,11 @@
             <div class="grid grid-cols-2 gap-4">
                 <div class="p-5 bg-base-200 rounded-3xl border border-cream/50">
                     <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Opens At</p>
-                    <p class="text-2xl font-black text-charcoal tracking-tighter">{{ profile.opening_time|default:"08:00 AM" }}</p>
+                    <p class="text-2xl font-black text-charcoal tracking-tighter">{{business_day.opening_time|default:"08:00 AM" }}</p>
                 </div>
                 <div class="p-5 bg-base-200 rounded-3xl border border-cream/50">
                     <p class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Closes At</p>
-                    <p class="text-2xl font-black text-charcoal tracking-tighter">{{ profile.closing_time|default:"09:00 PM" }}</p>
+                    <p class="text-2xl font-black text-charcoal tracking-tighter">{{ business_day.closing_time|default:"09:00 PM" }}</p>
                 </div>
             </div>
             <div class="mt-6 flex items-center gap-3 p-3 bg-primary/5 rounded-2xl border border-primary/10">

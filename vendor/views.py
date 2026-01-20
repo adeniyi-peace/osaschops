@@ -11,6 +11,7 @@ import json
 from shop.models import Order, OrderItem, Product, EventInquiry, Category
 from . models import BusinessDay, DeliveryZone, StoreSetting
 from . forms import ProductForm, BusinessDayFormSet, DeliveryZoneFormset, StoreSettingForm
+from shop.utils import get_current_day_and_time
 
 class DashboardView(View):
     def get(self, request):
@@ -63,7 +64,7 @@ class OrderView(View):
 class OrderReceiptView(View):
     def get(self, request, order_id):
         order = get_object_or_404(
-            Order.objects.prefetch_related('packs__items__product'), 
+            Order.objects.prefetch_related('packs__items__product').select_related('delivery_zone'), 
             id=order_id
         )
         return render(request, "vendor/order_receipt.html", {"order": order})
@@ -247,12 +248,10 @@ class SettingsView(View):
     def get(self, request):
         business_day = BusinessDay.objects.all()
         delivery_zone = DeliveryZone.objects.all()
-        # store_settings = get_object_or_404(StoreSetting, name="Osaschops")
-        store_settings = DeliveryZone.objects.all()
+        store_settings = get_object_or_404(StoreSetting, name="Osaschops")
         business_formset = BusinessDayFormSet(queryset=business_day)
         delivery_formset = DeliveryZoneFormset(queryset=delivery_zone, prefix="delivery_zone")
-        # store_form = StoreSettingForm(instance=store_settings)
-        store_form = StoreSettingForm()
+        store_form = StoreSettingForm(instance=store_settings)
 
         context = {
             "business_formset":business_formset,
@@ -276,7 +275,7 @@ class SettingsView(View):
             delivery_formset.save()
             store_form.save()
 
-            return redirect("dashboard")
+            return redirect("store_profile")
 
         context = {
             "business_formset":business_formset,
@@ -308,14 +307,16 @@ class EventInquiryView(View):
 class StoreProfileView(View):
     def get(self, request):
         profile = StoreSetting.objects.first() # Assuming one vendor for now
-        day = timezone.now()
-        context = {'profile': profile}
+        day, time = get_current_day_and_time()
+        business_day = get_object_or_404(BusinessDay, day=day)
+        context = {'profile': profile, "business_day":business_day}
         return render(request, "vendor/store_profile.html", context)
 
     def post(self, request):
-        profile = StoreSetting.objects.first()
+        day, time = get_current_day_and_time()
+        business_day = get_object_or_404(BusinessDay, day=day)
         # Toggle Store Status (Open/Closed) via AJAX or Form
         if 'toggle_status' in request.POST:
-            profile.is_open = not profile.is_open
-            profile.save()
-            return JsonResponse({'status': 'success', 'is_open': profile.is_open})
+            business_day.is_open = not business_day.is_open
+            business_day.save()
+            return JsonResponse({'status': 'success', 'is_open': business_day.is_open})
