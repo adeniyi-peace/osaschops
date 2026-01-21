@@ -16,4 +16,8 @@ def get_pack_qty(cart, item_id):
 
 @register.simple_tag()
 def business_open():
-    return is_store_currently_open(BusinessDay.objects.all())
+    status, message = is_store_currently_open(BusinessDay.objects.all())
+    return {
+        'is_open': status,
+        'message': message
+    }

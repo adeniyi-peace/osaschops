@@ -1,7 +1,9 @@
 {% load shop_filters %}
 
 {% with qty=cart|get_pack_qty:item.id %}
-<div id="menu-card-{{item.id}}" class="flex justify-between bg-white rounded-3xl shadow-card overflow-hidden hover:shadow-heavy transition-all duration-300 group" data-aos="fade-up">
+<div id="menu-card-{{item.id}}" class="flex items-center justify-between bg-white rounded-3xl shadow-card overflow-hidden hover:shadow-heavy transition-all duration-300 group
+        {% if not item.is_available %} grayscale opacity-75 pointer-events-none {% elif not open_status.is_open %} opacity-95 {% endif %}" 
+    data-aos="fade-up">
     
     <div class="flex-1 p-5 md:p-8 flex flex-col justify-between gap-4">
         <div>
@@ -28,10 +30,25 @@
 
     <div class="relative p-3">
         <div class="size-32 rounded-2xl overflow-hidden relative bg-base-200">
+            {% if not open_status.is_open %}
+                <div class="absolute inset-0 bg-charcoal/40 backdrop-blur-[1px] z-20 flex items-center justify-center">
+                    <span class="text-white font-black uppercase italic tracking-tighter text-[10px] bg-charcoal/80 px-2 py-1 rounded-md">
+                        Resting
+                    </span>
+                </div>
+            {% elif not item.is_available %}
+            <div class="absolute inset-0 bg-charcoal/60 backdrop-blur-[2px] z-20 flex items-center justify-center">
+                <span class="text-white font-black uppercase italic tracking-tighter text-xs -rotate-12 border-2 border-white px-2 py-1">
+                    Sold Out
+                </span>
+            </div>
+            
+            {% endif %}
+
             {% if item.image %}
                 <img src="{{ item.image.url }}" 
                      alt="{{ item.name }}"
-                     class="w-full h-full object-cover transition duration-500 group-hover:scale-110" 
+                     class="w-full h-full object-cover transition duration-500 {% if open_status.is_open and item.is_available %} group-hover:scale-110 {% endif %}" 
                      loading="lazy">
             {% else %}
                 <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">
@@ -39,6 +56,7 @@
                 </div>
             {% endif %}
             
+            {% if item.is_available and open_status.is_open %}
             <div class="absolute bottom-0 right-0 overflow-hidden rounded-tl-2xl shadow-lg" id="btn-container-{{ item.id }}">
                 
                 {% if qty > 0 %}
@@ -60,6 +78,7 @@
                 {% endif %}
 
             </div>
+            {% endif %}
         </div>
     </div>
 </div>

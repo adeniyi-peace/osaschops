@@ -4,6 +4,11 @@ from django.utils.text import slugify
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
+    icon_emoji = models.CharField(
+        max_length=10, 
+        default="🥟", 
+        help_text="Enter a single emoji (e.g., 🍗, 🥤, 🍱)"
+    )
 
     def save(self, *args, **kwargs):
         if not self.slug:

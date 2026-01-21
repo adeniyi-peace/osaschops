@@ -5,17 +5,38 @@
 {% block content %}
 <section class="bg-base-200/50 min-h-screen pb-24">
     <div class="container mx-auto px-4 py-8">
-        <div class="flex items-center gap-4 mb-8" data-aos="fade-down">
-            <a href="{% url 'menu' %}" class="btn btn-ghost btn-circle">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-            </a>
-            <h1 class="text-3xl font-heading font-black uppercase italic tracking-tighter">
-                Your <span class="text-primary">Chops Bag</span>
-            </h1>
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4" data-aos="fade-down">
+            <div class="flex items-center gap-4 mb-8">
+                <a href="{% url 'menu' %}" class="btn btn-ghost btn-circle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </a>
+                <h1 class="text-3xl font-heading font-black uppercase italic tracking-tighter">
+                    Your <span class="text-primary">Chops Bag</span>
+                </h1>
+            </div>
+            <div class="text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                <span class="text-primary underline underline-offset-4">Bag</span>
+                <span class="text-gray-300">/</span>
+                <span class="text-gray-400">Checkout</span>
+                <span class="text-gray-300">/</span>
+                <span class="text-gray-400">Payment</span>
+            </div>
         </div>
 
         <div class="grid lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-10" id="cart-wrapper">
+                {% if not open_status.is_open %}
+                <div class="bg-error/10 border-2 border-error/20 p-6 rounded-4xl flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 bg-error text-white rounded-full flex items-center justify-center shrink-0 shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                    </div>
+                    <div>
+                        <h4 class="font-heading font-black uppercase italic text-error leading-none">Orders are currently paused</h4>
+                        <p class="text-error/70 text-xs font-bold uppercase tracking-wider mt-1">{{ open_status.message }}</p>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% include 'cart/includes/cart_list_partial.html' %}
             </div>
 
@@ -45,9 +66,18 @@
                         </div> -->
                     </div>
 
-                    <a href="{% url 'checkout' %}" class="btn btn-primary w-full btn-lg rounded-full text-soft-black font-black uppercase italic shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform">
-                        Proceed to Checkout
-                    </a>
+                    {% if open_status.is_open %}
+                        <a href="{% url 'checkout' %}" class="btn btn-primary w-full btn-lg rounded-full text-soft-black font-black uppercase italic shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform">
+                            Proceed to Checkout
+                        </a>
+                    {% else %}
+                        <button disabled class="btn btn-disabled w-full btn-lg rounded-full bg-white/10 text-white/30 font-black uppercase italic border-none cursor-not-allowed">
+                            Kitchen Closed
+                        </button>
+                        <a href="https://wa.me/{{ store_settings.whatsapp_number }}" class="btn btn-outline btn-primary w-full rounded-full mt-3 font-black uppercase text-xs">
+                            Pre-order via WhatsApp
+                        </a>
+                    {% endif %}
 
                     <div class="mt-6 flex items-center justify-center gap-2 text-xs text-gray-500 uppercase font-bold tracking-widest">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
@@ -64,14 +94,19 @@
         <span class="text-gray-500 font-bold text-xs uppercase">Total Amount</span>
         <span class="text-xl font-black text-charcoal">₦{{ total_price }}</span>
     </div>
-    <a href="{% url 'checkout' %}" class="btn btn-primary w-full rounded-full font-black uppercase animate-pulse flex items-center justify-center gap-2">
-        Checkout Now
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none"
-            viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round"
-            d="M9 5l7 7-7 7" />
-        </svg>
-    </a>
+    {% if open_status.is_open %}
+        <a href="{% url 'checkout' %}" class="btn btn-primary w-full rounded-full font-black uppercase animate-pulse flex items-center justify-center gap-2">
+            Checkout Now
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+        </a>
+    {% else %}
+        <div class="flex flex-col gap-2">
+            <button disabled class="btn btn-ghost bg-gray-100 text-gray-400 w-full rounded-full font-black uppercase">
+                Currently Closed
+            </button>
+            <p class="text-[9px] text-center font-bold text-gray-400 uppercase tracking-widest">{{ open_status.message }}</p>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
 
