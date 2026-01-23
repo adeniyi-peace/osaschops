@@ -14,6 +14,9 @@ urlpatterns = [
     path("menu/delete-menu/<int:pk>/", views.ProductDeleteView.as_view(), name="delete_menu"),
     path("settings/", views.SettingsView.as_view(), name="settings"),
     path("event-inquiry/", views.EventInquiryView.as_view(), name="vendor_event_inquiry"),
-    path("store-profile/", views.StoreProfileView.as_view(), name="store_profile")
+    path("store-profile/", views.StoreProfileView.as_view(), name="store_profile"),
+
+    path("login/", views.LoginView.as_view(), name="vendor_login"),
+    path("logout/", views.LogoutView.as_view(), name="vendor_logout"),
     
 ]

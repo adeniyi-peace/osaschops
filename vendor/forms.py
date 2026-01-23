@@ -3,6 +3,23 @@ from django import forms
 from shop.models import Product
 from . models import BusinessDay, StoreSetting, DeliveryZone
 
+from django.contrib.auth.forms import AuthenticationForm
+
+class VendorLoginForm(AuthenticationForm):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={
+            "class": "input input-bordered w-full",
+            "placeholder": "Username",
+            "autofocus": True
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            "class": "input input-bordered w-full",
+            "placeholder": "Password"
+        })
+    )
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product

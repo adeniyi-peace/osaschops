@@ -7,10 +7,12 @@ from django.db.models.functions import Now
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 import json
+from django.contrib import messages
+from django.contrib.auth import login, logout
 
 from shop.models import Order, OrderItem, Product, EventInquiry, Category
 from . models import BusinessDay, DeliveryZone, StoreSetting
-from . forms import ProductForm, BusinessDayFormSet, DeliveryZoneFormset, StoreSettingForm
+from . forms import ProductForm, BusinessDayFormSet, DeliveryZoneFormset, StoreSettingForm, VendorLoginForm
 from shop.utils import get_current_day_and_time
 
 class DashboardView(View):
@@ -302,6 +304,18 @@ class EventInquiryView(View):
 
         return render(request, "vendor/event_inquiry_page.html", context)
 
+    def post(self, request):
+        inquiry_id = request.POST.get('inquiry_id')
+        new_status = request.POST.get('status')
+        inquiry = get_object_or_404(EventInquiry, id=inquiry_id)
+        
+        if new_status in ["contacted", "confirmed", "cancelled"]:
+            inquiry.status = new_status
+            inquiry.save()
+            messages.success(request, f"Inquiry for {inquiry.name} updated to {new_status}!")
+        
+        return redirect("vendor_event_inquiry")
+
 
 
 class StoreProfileView(View):
@@ -320,3 +334,41 @@ class StoreProfileView(View):
             business_day.is_open = not business_day.is_open
             business_day.save()
             return JsonResponse({'status': 'success', 'is_open': business_day.is_open})
+
+class LoginView(View):
+    def get(self, request):
+        if request.user.is_authenticated and request.user.is_staff:
+            return redirect("vendor_dashboard")
+
+        form = VendorLoginForm(request)
+
+        return render(request, "vendor/login.html", {
+            "form": form
+        })
+
+    def post(self, request):
+
+        form = VendorLoginForm(request, data=request.POST )
+
+        
+        if form.is_valid():
+            user = form.get_user()
+
+            if not user.is_staff:
+                messages.error(request, "Access denied.")
+                return redirect("vendor_login")
+
+            login(request, user)
+            return redirect("dashboard")
+
+        messages.error(request, "Invalid login details")
+
+        return render(request, "vendor/login.html", {
+            "form": form
+        })
+
+
+class LogoutView(View):
+    def get(self, request):
+        logout(request)
+        return redirect("vendor_login")

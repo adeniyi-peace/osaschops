@@ -92,6 +92,14 @@
                     </div>
 
                     <div class="form-control">
+                        <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Event Type</span></label>
+                        {{form.event_type}}
+                        {% if form.event_type.errors %}
+                            <label class="label p-0 mt-1"><span class="label-text-alt text-red-600 font-black uppercase italic text-[9px] tracking-tighter">{{ form.event_type.errors.0 }}</span></label>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-control">
                         <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Event Location</span></label>
                         {{form.location}}
                         {% if form.location.errors %}

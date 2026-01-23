@@ -28,9 +28,11 @@ class BulkOrderForm(forms.ModelForm):
             }),
             "event_type":forms.TextInput(attrs={
                 "class":bulk_order_input_class,
+                "placeholder":"Wedding, Party, etc."
             }),
             "event_date":forms.DateInput(attrs={
                 "class":bulk_order_input_class,
+                "type":"date"
             }),
             "guest_count":forms.NumberInput(attrs={
                 "class":bulk_order_input_class,
@@ -40,7 +42,7 @@ class BulkOrderForm(forms.ModelForm):
                 "class":bulk_order_input_class,
                 "placeholder":"e.g. Victoria Island, Lagos"
             }),
-            "note":forms.Textarea(attrs={
+            "notes":forms.Textarea(attrs={
                 "class":"textarea textarea-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary"
             }),
 

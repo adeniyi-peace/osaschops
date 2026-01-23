@@ -11,10 +11,18 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import environ
+import os
+
+env = environ.Env(
+    DEBUG=(bool, True),
+    SECRET_KEY=(str, "jhviiivsosovn")
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -156,3 +164,5 @@ CART_SESSION_ID = "cart"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR/"media"
+
+PAYSTACK_SECRET_KEY = env("PAYSTACK_SECRET_KEY")
