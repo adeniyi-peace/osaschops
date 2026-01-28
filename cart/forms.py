@@ -1,8 +1,25 @@
 from django import forms
+from phonenumber_field.formfields import SplitPhoneNumberField
 
 from shop.models import Order
+from shop.forms import FlagSplitPhoneNumberPrefixWidget
+
+
+class FormSplitPhoneNumberField(SplitPhoneNumberField):
+    widget = FlagSplitPhoneNumberPrefixWidget
+
+    def prefix_field(self):
+        return super().prefix_field()
+    
+    def number_field(self):
+        number_field = super().number_field()
+        number_field.widget.attrs["class"] = "input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full"
+        number_field.widget.attrs["placeholder"] = "080..."
+        return number_field
 
 class OrderForm(forms.ModelForm):
+    phone = FormSplitPhoneNumberField()
+
     class Meta:
         model = Order
         exclude = ["status","created_at","total_amount"]
@@ -14,10 +31,6 @@ class OrderForm(forms.ModelForm):
             "email" : forms.TextInput(attrs={
                 "class":"input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full",
                 "placeholder":""
-            }),
-            "phone" : forms.TextInput(attrs={
-                "class":"input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full",
-                "placeholder":"080XXXXXXXX"
             }),
             "address" : forms.TextInput(attrs={
                 "class":"input input-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary w-full",

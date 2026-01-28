@@ -64,7 +64,10 @@
                         </div>
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold uppercase text-xs">Phone Number</span></label>
-                            {{ form.phone }}
+                            <div class="flex gap-2">
+                                {{ form.phone.0 }}
+                                {{ form.phone.1 }}
+                            </div>
                             {% if form.phone.errors %}
                                 <label class="label"><span class="label-text-alt text-error font-black uppercase italic text-[10px]">{{ form.phone.errors.0 }}</span></label>
                             {% endif %}
@@ -196,7 +199,7 @@
                             <p class="text-[10px] text-center text-error font-bold uppercase tracking-widest italic">
                                 {{ open_status.message }}
                             </p>
-                            <a href="https://wa.me/{{ store_settings.whatsapp_number }}" class="btn btn-outline btn-primary w-full rounded-full font-black uppercase text-xs">
+                            <a href="https://wa.me/{{ STORE.whatsapp_number }}" class="btn btn-outline btn-primary w-full rounded-full font-black uppercase text-xs">
                                 WhatsApp Pre-order
                             </a>
                         </div>

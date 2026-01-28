@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@700;900&family=Poppins:wght@700;900&display=swap" rel="stylesheet">
 
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    {% block header %}{% endblock %}
+    
 
     {% tailwind_css %}
     
@@ -27,6 +29,7 @@
 <body class="min-h-screen flex flex-col bg-base-100 text-charcoal overflow-x-hidden">
 
     {% business_open as open_status %}
+    {% shop as SHOP %}
 
     {% if not open_status.is_open %}
     <div id="closed-overlay" class="fixed inset-0 z-9999 flex items-center justify-center p-4">
@@ -51,7 +54,7 @@
                     Just Browsing
                 </button>
                 
-                <a href="https://wa.me/{{ store_settings.whatsapp_number }}" 
+                <a href="https://wa.me/{{ STORE.whatsapp_number }}" 
                 class="btn btn-primary w-full rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg">
                     Pre-order on WhatsApp
                 </a>
@@ -74,10 +77,14 @@
                     </ul>
                 </div>
                 <a href="/" class="text-xl font-heading font-black tracking-tight uppercase italic">
+                    {% if SHOP.logo %}
+                    <img src="{{ SHOP.logo.url }}" alt="OsasChops log" class="h-7 w-34 object-cover py-[-0.5]">
+                    {% else %}
                     Osas<span class="text-primary">Chops</span>
+                    {% endif %}
                 </a>
                 <div class="flex items-center gap-2 px-2"> 
-                        {% if open_status.0 %}
+                        {% if open_status.is_open %}
                             <span class="relative flex h-3 w-3">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-3 w-3 bg-success"></span>

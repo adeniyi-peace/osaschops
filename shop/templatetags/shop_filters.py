@@ -1,8 +1,15 @@
 from django import template
 from vendor.models import BusinessDay
+from django.core.cache import cache
+
 from ..utils import is_store_currently_open
+from vendor.models import StoreSetting
+
 
 register = template.Library()
+
+SHOP = "vendor_unread_message_count"
+CACHE_TIMEOUT = 60 * 5
 
 @register.filter
 def get_pack_qty(cart, item_id):
@@ -21,3 +28,18 @@ def business_open():
         'is_open': status,
         'message': message
     }
+
+
+@register.simple_tag(takes_context=True)
+def shop(context):
+    shop = cache.get(SHOP)
+
+    if shop == None:
+        try:
+            shop = StoreSetting.objects.first()
+        except AttributeError:
+            shop = 0
+        
+        cache.set(SHOP, shop, CACHE_TIMEOUT)
+
+    return shop

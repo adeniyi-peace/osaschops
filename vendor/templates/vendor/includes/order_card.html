@@ -43,6 +43,8 @@
                 <button onclick="updateOrderStatus('{{ order.id }}', 'ready')" class="btn btn-sm btn-info text-white font-black uppercase text-[10px] italic">Ready</button>
             {% elif order.status == 'ready' %}
                 <button onclick="updateOrderStatus('{{ order.id }}', 'shipped')" class="btn btn-sm btn-primary text-soft-black font-black uppercase text-[10px] italic">Dispatch</button>
+            {% elif order.status == 'shipped' %}
+                <button onclick="updateOrderStatus('{{ order.id }}', 'delivered')" class="btn btn-sm btn-accent text-soft-black font-black uppercase text-[10px] italic">Delivered</button>
             {% endif %}
         </div>
     </td>

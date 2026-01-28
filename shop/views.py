@@ -62,6 +62,8 @@ class MenuView(View):
                 "products": products,
                 "cart": cart,
                 "filters": request.GET,
+                # Ensures opens status is not false
+                "open_status":True
             },
             request=request
         )

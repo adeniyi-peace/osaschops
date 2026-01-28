@@ -342,7 +342,7 @@ class LoginView(View):
 
         form = VendorLoginForm(request)
 
-        return render(request, "vendor/login.html", {
+        return render(request, "vendor/login_page.html", {
             "form": form
         })
 
@@ -363,7 +363,7 @@ class LoginView(View):
 
         messages.error(request, "Invalid login details")
 
-        return render(request, "vendor/login.html", {
+        return render(request, "vendor/login_page.html", {
             "form": form
         })
 

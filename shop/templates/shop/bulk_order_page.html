@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
+
 {% block content %}
 <section class="bg-cream/20 min-h-screen py-12 md:py-20">
     <div class="container mx-auto px-4">
@@ -67,7 +68,10 @@
                         </div>
                         <div class="form-control">
                             <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Phone Number</span></label>
-                            {{form.phone}}
+                            <div class="flex gap-2">
+                                {{form.phone.0}}
+                                {{ form.phone.1 }}
+                            </div>
                             {% if form.phone.errors %}
                                 <label class="label p-0 mt-1"><span class="label-text-alt text-red-600 font-black uppercase italic text-[9px] tracking-tighter">{{ form.phone.errors.0 }}</span></label>
                             {% endif %}

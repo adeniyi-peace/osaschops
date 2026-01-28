@@ -1,5 +1,6 @@
 '''from twilio.rest import Client
 from django.conf import settings
+from shop.templatetags.shop_filters import shop
 
 def send_whatsapp_update(order):
     client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
@@ -24,7 +25,7 @@ def send_whatsapp_update(order):
 
     try:
         message = client.messages.create(
-            from_='whatsapp:' + settings.TWILIO_WHATSAPP_NUMBER,
+            from_='whatsapp:' + shop.whatsapp_number,
             body=message_body,
             to='whatsapp:' + order.phone # Ensure phone includes country code like +234
         )

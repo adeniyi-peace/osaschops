@@ -1,4 +1,5 @@
 {% load static tailwind_tags %}
+{% load shop_filters %}
 <!DOCTYPE html>
 <html lang="en" data-theme="osaschops">
 <head>
@@ -9,11 +10,16 @@
     
 </head>
 <body class="bg-charcoal min-h-screen flex items-center justify-center p-4">
+    {% shop as SHOP %}
 
     <div class="max-w-md w-full" data-aos="fade-up">
         <div class="text-center mb-10">
             <h1 class="font-heading text-5xl font-black text-white uppercase italic tracking-tighter">
-                OSAS<span class="text-primary">CHOPS</span>
+                {% if SHOP.logo %}
+                <img src="{{ SHOP.logo.url }}" alt="OsasChops log" class="size-6">
+                {% else %}
+                Osas<span class="text-primary">Chops</span>
+                {% endif %}
             </h1>
             <div class="flex items-center justify-center gap-2 mt-2">
                 <span class="h-px w-8 bg-primary/30"></span>
@@ -21,6 +27,17 @@
                 <span class="h-px w-8 bg-primary/30"></span>
             </div>
         </div>
+
+         {% if form.non_field_errors %}
+        <div class="mb-8 animate-pulse">
+            {% for error in form.non_field_errors %}
+            <div class="alert alert-error shadow-lg rounded-2xl border-2 border-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <span class="font-bold uppercase italic text-sm">{{ error }}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <div class="bg-white rounded-[3rem] p-10 shadow-heavy border border-white/10">
             <div class="mb-8">
@@ -37,13 +54,21 @@
                 
                 <div class="form-control">
                     <label class="label"><span class="label-text font-black uppercase text-[10px] tracking-widest text-gray-500">Username</span></label>
-                    <input type="text" name="username" placeholder="admin_osas" class="input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-2 focus:ring-primary font-bold" required>
+                    {{ form.username }}
                 </div>
 
                 <div class="form-control">
                     <label class="label"><span class="label-text font-black uppercase text-[10px] tracking-widest text-gray-500">Password</span></label>
-                    <input type="password" name="password" placeholder="••••••••" class="input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-2 focus:ring-primary" required>
+                    {{ form.password }}
                 </div>
+
+                {% if messages %}
+                <div class="mt-6 space-y-2">
+                    {% for message in messages %}
+                    <div class="alert alert-error text-sm">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
 
                 <div class="flex items-center justify-between px-1">
                     <label class="label cursor-pointer gap-2">

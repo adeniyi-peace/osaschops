@@ -1,22 +1,24 @@
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 
 from shop.models import Product
 from . models import BusinessDay, StoreSetting, DeliveryZone
+from phonenumber_field.formfields import SplitPhoneNumberField
+from shop.forms import FlagSplitPhoneNumberPrefixWidget
 
-from django.contrib.auth.forms import AuthenticationForm
 
 class VendorLoginForm(AuthenticationForm):
     username = forms.CharField(
         widget=forms.TextInput(attrs={
-            "class": "input input-bordered w-full",
+            "class": "input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-2 focus:ring-primary font-bold",
             "placeholder": "Username",
             "autofocus": True
         })
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={
-            "class": "input input-bordered w-full",
-            "placeholder": "Password"
+            "class": "input input-bordered w-full rounded-2xl bg-base-200 border-none focus:ring-2 focus:ring-primary",
+            "placeholder": "••••••••"
         })
     )
 
@@ -110,7 +112,20 @@ class BusinessDayFormSet(BaseOpenFormset):
                 # form.fields["day"].label = BusinessDay.DAYS(day_index).label
 
 
+class FormSplitPhoneNumberField(SplitPhoneNumberField):
+    widget = FlagSplitPhoneNumberPrefixWidget
+
+    def prefix_field(self):
+        return super().prefix_field()
+    
+    def number_field(self):
+        number_field = super().number_field()
+        number_field.widget.attrs["class"] = "input input-bordered grow rounded-xl bg-base-200 border-none font-bold"
+        return number_field
+
+
 class StoreSettingForm(forms.ModelForm):
+    whatsapp_number = FormSplitPhoneNumberField()
     class Meta:
         model = StoreSetting
         exclude = ["name"]

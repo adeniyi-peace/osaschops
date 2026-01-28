@@ -56,6 +56,10 @@ INSTALLED_APPS = [
     "vendor",
 
     "channels",
+    "phonenumber_field",
+
+    # for file removal after changes
+    "django_cleanup.apps.CleanupConfig",
 ]
 
 MIDDLEWARE = [
@@ -166,3 +170,16 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR/"media"
 
 PAYSTACK_SECRET_KEY = env("PAYSTACK_SECRET_KEY")
+
+CACHES = {
+    "default":{
+        "BACKEND":"django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION":"unique-local-cache-1",
+        "TIMEOUT": 300,
+        "OPTIONS": {
+            "MAX_ENTRIES":1000
+        }
+    }
+}
+
+PHONENUMBER_DEFAULT_REGION = "NG"

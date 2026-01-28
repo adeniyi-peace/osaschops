@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
+from phonenumber_field.modelfields import PhoneNumberField
+from .utils import compress_image
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
@@ -30,6 +32,14 @@ class Product(models.Model):
     is_available = models.BooleanField(default=True) # The toggle we built
     is_featured = models.BooleanField(default=False) # For the home page hero
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._original_image = self.image
+
+    def save(self, *args, **kwargs):
+        if self.image != self._original_image:
+            compress_image(self.image, 1100)
+
     def __str__(self):
         return self.name
     
@@ -45,7 +55,7 @@ class Order(models.Model):
 
     name = models.CharField(max_length=200)
     email = models.EmailField()
-    phone = models.CharField(max_length=20)
+    phone = PhoneNumberField()
     address = models.TextField()
     delivery_zone = models.ForeignKey("vendor.DeliveryZone", on_delete=models.SET_NULL, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
@@ -83,12 +93,12 @@ class EventInquiry(models.Model):
     STATUS = [('new', 'New'), ('contacted', 'Contacted'), ('confirmed', 'Confirmed'), ('cancelled', 'Cancelled')]
     
     name = models.CharField(max_length=200)
-    phone = models.CharField(max_length=20)
+    phone = PhoneNumberField()
     event_type = models.CharField(max_length=100) # Wedding, Party, etc.
     event_date = models.DateField()
     guest_count = models.PositiveIntegerField()
     location = models.CharField(max_length=255)
-    package_choice = models.ForeignKey(Product, on_delete=models.CASCADE)
+    package_choice = models.CharField(max_length=255)
     notes = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='new')
     created_at = models.DateTimeField(auto_now_add=True)
