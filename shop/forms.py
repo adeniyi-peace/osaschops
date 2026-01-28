@@ -47,7 +47,7 @@ class FormSplitPhoneNumberField(SplitPhoneNumberField):
 class BulkOrderForm(forms.ModelForm):
     package_choice = forms.ModelMultipleChoiceField(
         # empty_label="Select Package",
-        queryset=Product.objects.all(),
+        queryset=Product.objects.all().exclude(category__name="Small Chops"),
         widget= forms.SelectMultiple(attrs={
             "class":"select select-bordered rounded-xl bg-base-200 border-none focus:ring-2 focus:ring-primary font-bold",
         })

@@ -73,6 +73,7 @@
                     <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-1 p-2 shadow-card bg-base-100 rounded-2xl w-52 font-medium">
                         <li><a href="/">Home</a></li>
                         <li><a href={% url "menu" %}>Menu</a></li>
+                        <li><a href={% url "bulk_order" %}>Bulk Orders</a></li>
                         <li><a href="{% url "about_us" %}">About Us</a></li>
                     </ul>
                 </div>
@@ -103,6 +104,7 @@
                     <li><a href="/" class="hover:text-primary transition-soft">Home</a></li>
                     <li><a href={% url "menu" %} class="hover:text-primary transition-soft">Our Menu</a></li>
                     <li><a href={% url "bulk_order" %} class="hover:text-primary transition-soft">Bulk Orders</a></li>
+                    <li><a href="{% url "about_us" %}" class="hover:text-primary transition-soft">About Us</a></li>
                 </ul>
             </div>
 

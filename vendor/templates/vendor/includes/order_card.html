@@ -20,7 +20,7 @@
     <td class="hidden sm:table-cell border-none">
         {% if order.payment_ref == "Pay on Delivery" %}
             <span class="badge badge-error badge-outline font-black text-[9px] uppercase tracking-tighter">COD</span>
-        {% else %}
+        {% elif order.payment_ref != "Pay on Delivery" and order.paid %}
             <span class="badge badge-success font-black text-[9px] uppercase tracking-tighter text-white">Paid</span>
         {% endif %}
     </td>

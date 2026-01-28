@@ -9,13 +9,14 @@ from django.template.loader import render_to_string
 import json
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from shop.models import Order, OrderItem, Product, EventInquiry, Category
 from . models import BusinessDay, DeliveryZone, StoreSetting
 from . forms import ProductForm, BusinessDayFormSet, DeliveryZoneFormset, StoreSettingForm, VendorLoginForm
 from shop.utils import get_current_day_and_time
 
-class DashboardView(View):
+class DashboardView(LoginRequiredMixin, View):
     def get(self, request):
         today = timezone.now().date()
         yesterday = today - timedelta(days=1)
@@ -51,7 +52,7 @@ class DashboardView(View):
 
         
     
-class OrderView(View):
+class OrderView(LoginRequiredMixin, View):
     def get(self, request):
         active_orders = Order.objects.exclude(status="delivered").prefetch_related(
             'packs__items__product'
@@ -63,7 +64,7 @@ class OrderView(View):
 
         return render(request, "vendor/order_page.html", context)
 
-class OrderReceiptView(View):
+class OrderReceiptView(LoginRequiredMixin, View):
     def get(self, request, order_id):
         order = get_object_or_404(
             Order.objects.prefetch_related('packs__items__product').select_related('delivery_zone'), 
@@ -72,7 +73,7 @@ class OrderReceiptView(View):
         return render(request, "vendor/order_receipt.html", {"order": order})
 
 
-class UpdateOrderStatusView(View):
+class UpdateOrderStatusView(LoginRequiredMixin, View):
     def post(self, request, order_id):
         data = json.loads(request.body)
         new_status = data.get('status')
@@ -89,7 +90,7 @@ class UpdateOrderStatusView(View):
         return JsonResponse({'success': True})
     
 
-class SalesReportView(TemplateView):
+class SalesReportView(LoginRequiredMixin, TemplateView):
     template_name = 'vendor/report_page.html'
 
     def get_context_data(self, **kwargs):
@@ -151,7 +152,7 @@ class SalesReportView(TemplateView):
         })
         return context
 
-class MenuListView(View):
+class MenuListView(LoginRequiredMixin, View):
 
     def get(self, request):
         product = Product.objects.all()
@@ -246,7 +247,7 @@ class ProductDeleteView(View):
         return redirect("vendor_menu")
 
 
-class SettingsView(View):
+class SettingsView(LoginRequiredMixin, View):
     def get(self, request):
         business_day = BusinessDay.objects.all()
         delivery_zone = DeliveryZone.objects.all()
@@ -289,7 +290,7 @@ class SettingsView(View):
         return render(request, "vendor/settings_page.html", context)
         
 
-class EventInquiryView(View):
+class EventInquiryView(LoginRequiredMixin, View):
     def get(self, request):
         query= EventInquiry.objects.all()
         inquiries = query.filter(status__in=["new","contacted"])
@@ -318,7 +319,7 @@ class EventInquiryView(View):
 
 
 
-class StoreProfileView(View):
+class StoreProfileView(LoginRequiredMixin, View):
     def get(self, request):
         profile = StoreSetting.objects.first() # Assuming one vendor for now
         day, time = get_current_day_and_time()
@@ -368,7 +369,7 @@ class LoginView(View):
         })
 
 
-class LogoutView(View):
+class LogoutView(LoginRequiredMixin, View):
     def get(self, request):
         logout(request)
         return redirect("vendor_login")

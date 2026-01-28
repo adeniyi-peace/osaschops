@@ -183,3 +183,5 @@ CACHES = {
 }
 
 PHONENUMBER_DEFAULT_REGION = "NG"
+
+LOGIN_URL = "/vendor/login/"
