@@ -30,6 +30,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body class="bg-base-200 min-h-screen">
+    {% shop as SHOP %}
 
     <div class="drawer lg:drawer-open">
         <input id="vendor-drawer" type="checkbox" class="drawer-toggle" />
@@ -168,7 +169,11 @@
         </div>
     </div>
 
+    {% if SHOP.notification_sound %}
+    <audio id="notificationSound" src="{{ SHOP.notification_sound.url }}" preload="auto"></audio>
+    {% else %}
     <audio id="notificationSound" src="{% static 'audio/sharp_notification_sound.wav' %}" preload="auto"></audio>
+    {% endif %}
 
     <script>
         // Determine ws:// or wss:// based on current protocol

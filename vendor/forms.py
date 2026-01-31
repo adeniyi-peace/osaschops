@@ -136,7 +136,7 @@ class StoreSettingForm(forms.ModelForm):
             "hero_title":forms.TextInput(attrs={
                 "class":"input input-bordered rounded-xl bg-base-200 border-none font-bold"
             }),
-            "hero_subtitle":forms.TextInput(attrs={
+            "hero_subtitle":forms.Textarea(attrs={
                 "class":"textarea textarea-bordered rounded-xl bg-base-200 border-none font-medium h-24"
             }),
             "hero_image":forms.FileInput(attrs={
@@ -146,6 +146,12 @@ class StoreSettingForm(forms.ModelForm):
                 "class":"input input-bordered grow rounded-xl bg-base-200 border-none font-bold"
             }),
             "logo":forms.FileInput(attrs={
+                "class":"file-input file-input-bordered file-input-primary w-full rounded-xl bg-base-200 border-none"
+            }),
+            "team_image":forms.FileInput(attrs={
+                "class":"file-input file-input-bordered file-input-primary w-full rounded-xl bg-base-200 border-none"
+            }),
+            "notification_sound":forms.FileInput(attrs={
                 "class":"file-input file-input-bordered file-input-primary w-full rounded-xl bg-base-200 border-none"
             }),
         }

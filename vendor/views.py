@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import View, TemplateView, ListView
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.db.models import Sum, Count, F, ExpressionWrapper, DurationField, Avg, Q
 from django.db.models.functions import Now
 from django.http import JsonResponse
@@ -15,11 +15,16 @@ from shop.models import Order, OrderItem, Product, EventInquiry, Category
 from . models import BusinessDay, DeliveryZone, StoreSetting
 from . forms import ProductForm, BusinessDayFormSet, DeliveryZoneFormset, StoreSettingForm, VendorLoginForm
 from shop.utils import get_current_day_and_time
+from . utils import clear_ghost_orders
 
 class DashboardView(LoginRequiredMixin, View):
     def get(self, request):
         today = timezone.now().date()
         yesterday = today - timedelta(days=1)
+
+        # Delete orders older than 2 hours that are still 'pending' 
+        # and weren't marked as 'Pay on Delivery'
+        clear_ghost_orders()
         
         # Revenue calculations
         today_revenue = Order.objects.filter(created_at__date=today, paid=True).aggregate(total=Sum("total_amount"))["total"] or 0
@@ -54,7 +59,13 @@ class DashboardView(LoginRequiredMixin, View):
     
 class OrderView(LoginRequiredMixin, View):
     def get(self, request):
-        active_orders = Order.objects.exclude(status="delivered").prefetch_related(
+        # 1. We exclude delivered orders (as you already did)
+        # 2. We exclude orders that are Paystack AND unpaid
+        active_orders = Order.objects.exclude(
+            status="delivered"
+        ).exclude(
+            Q(payment_ref="Paystack (Card/Transfer)") & Q(paid=False)
+        ).prefetch_related(
             'packs__items__product'
         ).select_related('delivery_zone')
 
@@ -88,6 +99,51 @@ class UpdateOrderStatusView(LoginRequiredMixin, View):
             ...
 
         return JsonResponse({'success': True})
+
+
+class EODReportView(LoginRequiredMixin, View):
+    def get(self, request):
+        today = timezone.now().date()
+        
+        # 1. Get today's completed orders
+        # We only count 'delivered' for revenue, but you might want 'ready' too depending on your flow
+        today_orders = Order.objects.filter(
+            created_at__date=today, 
+            status__in=['delivered', 'shipped', 'ready'] 
+        )
+
+        # 2. Calculate Financials
+        total_revenue = today_orders.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        total_count = today_orders.count()
+        
+        # Breakdown by Payment Type (Logic based on your dashboard HTML)
+        # We assume if payment_ref is 'Pay on Delivery' it is Cash/POD, otherwise Online
+        pod_orders = today_orders.filter(payment_ref='Pay on Delivery')
+        online_orders = today_orders.exclude(payment_ref='Pay on Delivery')
+        
+        cash_revenue = pod_orders.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+        online_revenue = online_orders.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+
+        # 3. Product Breakdown (Drill down: Order -> Pack -> Item)
+        # This tells the kitchen exactly what was consumed today
+        items_sold = OrderItem.objects.filter(
+            pack__order__in=today_orders
+        ).values('product__name').annotate(
+            qty=Sum('quantity'),
+            total_sales=Sum(F('quantity') * F('price'))
+        ).order_by('-qty')
+
+        context = {
+            'date': today,
+            'total_revenue': total_revenue,
+            'total_count': total_count,
+            'cash_revenue': cash_revenue,
+            'online_revenue': online_revenue,
+            'items_sold': items_sold,
+            'generated_at': timezone.now(),
+        }
+        
+        return render(request, 'vendor/eod_report_print.html', context)
     
 
 class SalesReportView(LoginRequiredMixin, TemplateView):
@@ -96,48 +152,82 @@ class SalesReportView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # 1. Date Range Handling (Default to last 30 days)
-        end_date = timezone.now()
-        start_date = end_date - timedelta(days=30)
-        
+        # 1. Date Range Handling (Dynamic)
+        start_param = self.request.GET.get('start')
+        end_param = self.request.GET.get('end')
+
+        if start_param and end_param:
+            start_date = datetime.strptime(start_param, '%Y-%m-%d')
+            end_date = datetime.strptime(end_param, '%Y-%m-%d')
+            # Make end_date include the full last day
+            end_date = end_date.replace(hour=23, minute=59, second=59)
+        else:
+            # Default to Last 30 Days
+            end_date = timezone.now()
+            start_date = end_date - timedelta(days=30)
+
+        # Base Queryset (Filtered by Date)
+        orders_queryset = Order.objects.filter(
+            status='delivered',
+            created_at__range=[start_date, end_date]
+        )
+
         # 2. Key Metrics
-        orders_queryset = Order.objects.filter(status='delivered')
         total_revenue = orders_queryset.aggregate(Sum('total_amount'))['total_amount__sum'] or 0
         total_orders = orders_queryset.count()
         avg_order_value = orders_queryset.aggregate(Avg('total_amount'))['total_amount__avg'] or 0
         
         # 3. Event Metrics
-        total_inquiries = EventInquiry.objects.count()
-        confirmed_inquiries = EventInquiry.objects.filter(status='confirmed').count()
+        inquiry_query = EventInquiry.objects.filter(created_at__range=[start_date, end_date])
+        total_inquiries = inquiry_query.count()
+        confirmed_inquiries = inquiry_query.filter(status='confirmed').count()
         conversion_rate = (confirmed_inquiries / total_inquiries * 100) if total_inquiries > 0 else 0
 
-        # 4. Category Performance (For the Progress Bars)
-        # We find how many items were sold per category
-        category_data = Category.objects.annotate(
-            sold_count=Count('products__order_items')
-        ).order_by('-sold_count')[:3]
+        # 4. CHART DATA: Revenue Trend (Last 7 days within range or selected range)
+        # We prepare data for Chart.js (Arrays)
+        chart_labels = []
+        chart_data = []
+        
+        # Logic to generate daily breakdown
+        delta = end_date - start_date
+        days_to_loop = delta.days + 1
+        # Cap chart at 14 days to prevent overcrowding, or group by week if longer (simplified here to daily)
+        if days_to_loop > 31: days_to_loop = 31 
 
-        # 5. Loyal Customers (Table Logic)
-        loyal_customers = Order.objects.values('email', 'name') \
+        for i in range(days_to_loop):
+            day = end_date - timedelta(days=i)
+            day_revenue = orders_queryset.filter(created_at__date=day.date()).aggregate(Sum('total_amount'))['total_amount__sum'] or 0
+            chart_labels.insert(0, day.strftime('%d %b')) # e.g. "01 Oct"
+            chart_data.insert(0, float(day_revenue))
+
+        # 5. Delivery Zone Performance (Where is the money coming from?)
+        zone_performance = orders_queryset.values('delivery_zone__name')\
+            .annotate(total=Sum('total_amount'), count=Count('id'))\
+            .order_by('-total')
+
+        # 6. Top Selling Products (Drill down: Order -> Pack -> Item)
+        # Note: We filter by the pack's order status being delivered
+        top_products = OrderItem.objects.filter(
+            pack__order__status='delivered',
+            pack__order__created_at__range=[start_date, end_date]
+        ).values('product__name')\
+         .annotate(sold_qty=Sum('quantity'), total_generated=Sum(F('price') * F('quantity')))\
+         .order_by('-sold_qty')[:5]
+
+        # 7. Category Data (Kept your logic)
+        category_data = Category.objects.annotate(
+            sold_count=Count('products__order_items', 
+            filter=Q(
+                products__order_items__pack__order__paid=True,
+                products__order_items__pack__order__created_at__range=[start_date, end_date]
+                )
+            )
+        ).order_by('-sold_count')[:4]
+
+        # 8. Loyal Customers
+        loyal_customers = orders_queryset.values('name', 'email') \
             .annotate(order_count=Count('id'), total_spend=Sum('total_amount')) \
             .order_by('-total_spend')[:5]
-
-        # 6. Revenue Trend Logic (Simplified for the Bar Chart)
-        # This gets revenue for the last 6 days
-        trend_data = []
-        for i in range(5, -1, -1):
-            day = end_date - timedelta(days=i)
-            day_revenue = Order.objects.filter(
-                created_at__date=day.date(), 
-                status='delivered'
-            ).aggregate(Sum('total_amount'))['total_amount__sum'] or 0
-            trend_data.append({
-                'day': day.strftime('%a'),
-                'amount': day_revenue
-            })
-
-        # Calculate max for chart scaling
-        max_rev = max([d['amount'] for d in trend_data]) if trend_data else 1
 
         context.update({
             'total_revenue': total_revenue,
@@ -145,10 +235,15 @@ class SalesReportView(LoginRequiredMixin, TemplateView):
             'avg_order_value': avg_order_value,
             'total_inquiries': total_inquiries,
             'conversion_rate': conversion_rate,
-            'category_data': category_data,
             'loyal_customers': loyal_customers,
-            'trend_data': trend_data,
-            'max_rev': max_rev,
+            'top_products': top_products,
+            'zone_performance': zone_performance,
+            'category_data': category_data,
+            # JSON dumps for Chart.js
+            'chart_labels': json.dumps(chart_labels),
+            'chart_data': json.dumps(chart_data),
+            'start_date': start_date,
+            'end_date': end_date,
         })
         return context
 
