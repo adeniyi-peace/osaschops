@@ -18,14 +18,15 @@ def get_current_day_and_time(timezone_name=settings.TIME_ZONE):
 
     return current_day, current_time
 
-def is_store_currently_open(model, BusinessDay):
+def is_store_currently_open(model):
 
     current_day_index, current_time = get_current_day_and_time()
+    queryset = model.objects.all()
 
     # 3. Look up today's schedule from the database
     try:
-        today_schedule = model.get(day=current_day_index)
-    except BusinessDay.DoesNotExist:
+        today_schedule = queryset.get(day=current_day_index)
+    except model.DoesNotExist:
         return False, "Schedule not set for today."
 
     # 4. Check if toggled open and if within time range
@@ -40,7 +41,7 @@ def is_store_currently_open(model, BusinessDay):
 
             # Filters through the related business hour linked to Vendor 
             # checking the day and if it is opened for that day
-            hours = model.filter(day=day, is_open=True).first()
+            hours = queryset.filter(day=day, is_open=True).first()
 
             if hours:
                 if i == 0 and current_time < hours.opening_time:

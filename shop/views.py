@@ -15,7 +15,7 @@ class HomePageView(View):
     def get(self, request):
         store = StoreSetting.objects.get(name="Osaschops")
         categories = Category.objects.all()
-        products =Product.objects.all().annotate(best_sellers=Count("order_items")).order_by("best_sellers")
+        products =Product.objects.all().annotate(best_sellers=Count("order_items")).order_by("best_sellers")[:6]
 
         context ={
             "store":store,
