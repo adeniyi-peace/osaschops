@@ -310,10 +310,10 @@ class AddEditProductView(View):
         else:
             form = ProductForm(request.POST, request.FILES)
 
-            if form.is_valid():
-                form.save()
+        if form.is_valid():
+            form.save()
 
-                return redirect("vendor_menu")
+            return JsonResponse({'success': True})
 
         context = {
             "form":form

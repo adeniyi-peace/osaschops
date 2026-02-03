@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 <section class="bg-base-200/50 min-h-screen pb-20">
@@ -161,10 +162,10 @@
                                         <span class="text-white/40 font-bold text-xs mt-0.5">x{{ item.quantity }}</span>
                                         <div class="flex flex-col">
                                             <span class="text-xs font-bold text-gray-200 uppercase tracking-tight">{{ item.product.name }}</span>
-                                            <span class="text-[10px] text-gray-500 font-medium">₦{{ item.product.price }} each</span>
+                                            <span class="text-[10px] text-gray-500 font-medium">₦{{ item.product.price|intcomma }} each</span>
                                         </div>
                                     </div>
-                                    <span class="text-xs font-black">₦{{ item.total_price }}</span>
+                                    <span class="text-xs font-black">₦{{ item.total_price|intcomma }}</span>
                                 </div>
                                 {% endfor %}
                             </div>
@@ -175,7 +176,7 @@
                     <div class="space-y-3 border-t border-white/10 pt-6">
                         <div class="flex justify-between text-gray-400 text-sm">
                             <span>Subtotal</span>
-                            <span>₦<span id="cart-total">{{ cart.get_total_cost }}</span></span>
+                            <span>₦<span id="cart-total">{{ cart.get_total_cost|intcomma }}</span></span>
                         </div>
                         <div class="flex justify-between text-gray-400 text-sm">
                             <span>Delivery Fee</span>
@@ -216,30 +217,5 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-    // To future code reviewers
-    // this function wil be added to select input attributes in cart/forms.py
-    function handleDeliveryZoneChange(selectElement) {
-        const cartDisplay = document.getElementById("cart-total")
-        const deliveryDisplay = document.getElementById("delivery-fee")
-        const totalDisplay = document.getElementById("total-cost")
-        
-        const selectedIndex = selectElement.selectedIndex
-        const selectedOption = selectElement.options[selectedIndex]
-        const selectedLabel = selectedOption.text
-        const zone = selectedLabel
-        const match = zone.match(/₦(\d+)/)
-        const price = match ? Number(match[1]) : null
-        console.log(match, price)
-
-        if (price){
-            deliveryDisplay.innerHTML = price
-            totalDisplay.innerHTML = Number(cartDisplay.innerHTML) + price
-        }
-        else {
-            deliveryDisplay.innerHTML = 0
-            totalDisplay.innerHTML = cartDisplay.innerHTML
-        }
-    }
-</script>
+<script src="{% static "cart/checkout_page.js" %}"></script>
 {% endblock %}

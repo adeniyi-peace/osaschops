@@ -39,6 +39,8 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if self.image != self._original_image:
             compress_image(self.image, 1100)
+        return super().save(*args, **kwargs)
+        
 
     def __str__(self):
         return self.name
