@@ -6,6 +6,8 @@ from django.core.files.base import ContentFile
 from PIL import Image
 from io import BytesIO
 
+from vendor.models import BusinessDay
+
 def get_current_day_and_time(timezone_name=settings.TIME_ZONE):
     """
     Returns the current day of the week
@@ -25,7 +27,7 @@ def is_store_currently_open(model):
     # 3. Look up today's schedule from the database
     try:
         today_schedule = model.get(day=current_day_index)
-    except model.hours.model.DoesNotExist:
+    except BusinessDay.DoesNotExist:
         return False, "Schedule not set for today."
 
     # 4. Check if toggled open and if within time range
