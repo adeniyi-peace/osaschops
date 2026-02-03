@@ -6,8 +6,6 @@ from django.core.files.base import ContentFile
 from PIL import Image
 from io import BytesIO
 
-from vendor.models import BusinessDay
-
 def get_current_day_and_time(timezone_name=settings.TIME_ZONE):
     """
     Returns the current day of the week
@@ -20,7 +18,7 @@ def get_current_day_and_time(timezone_name=settings.TIME_ZONE):
 
     return current_day, current_time
 
-def is_store_currently_open(model):
+def is_store_currently_open(model, BusinessDay):
 
     current_day_index, current_time = get_current_day_and_time()
 
