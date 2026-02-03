@@ -6,7 +6,7 @@
     <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-cream rounded-full blur-3xl opacity-50"></div>
     <div class="absolute bottom-[-10%] left-[-5%] w-72 h-72 bg-primary rounded-full blur-3xl opacity-20"></div>
 
-    <div class="container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center relative z-10">
+    <div class="container mx-auto px-4 py-4 grid lg:grid-cols-2 gap-12 items-center relative z-10">
         <div data-aos="fade-right">
             <div class="badge badge-primary font-bold mb-4 py-4 px-6 rounded-full text-soft-black">
                 {{ store.hero_badge }}
@@ -35,11 +35,11 @@
         </div>
 
         <div class="relative" data-aos="zoom-in" data-aos-delay="200">
-            <div class="relative rounded-3xl overflow-hidden shadow-heavy border-8 border-white">
+            <div class="relative rounded-3xl overflow-hidden shadow-heavy border-8 border-white ">
                 {% if store.hero_image %}
                     <img src="{{ store.hero_image.url }}" alt="Hero Image" class="w-full h-auto object-cover">
                 {% else %}
-                    <img src="{% static 'images/osaschops-hero.jpg' %}" alt="Default Hero" class="w-full h-auto object-cover">
+                    <img src="{% static 'images/osaschops-hero.jpg' %}" alt="Default Hero" class="w-full h-auto lg:max-h-[85vh] object-contain">
                 {% endif %}
             </div>
             <div class="absolute -bottom-6 -right-6 z-10 bg-white p-6 rounded-2xl shadow-card flex items-center gap-4 animate-bounce">

@@ -94,7 +94,11 @@ class AddToCartView(View):
 
         item = get_object_or_404(Product, id=item_id)
 
-        html_1 = render_to_string("shop/includes/menu_card.html", {"cart":cart, "item":item}, request)
+        html_1 = render_to_string(
+            "shop/includes/menu_card.html", 
+            {"cart":cart, "item":item, "open_status":{"is_open": True}, "reload":True}, 
+            request
+        )
         html_2 = render_to_string("cart/includes/cart_drawer.html", {"cart":cart}, request)
 
         return JsonResponse({"success":True, "html_1":html_1, "html_2":html_2, "cart":len(cart)})

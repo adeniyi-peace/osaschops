@@ -5549,6 +5549,11 @@
       }
     }
   }
+  .lg\:max-h-\[85vh\] {
+    @media (width >= 64rem) {
+        max-height: 85vh;
+    }
+  }
   @media (width >= 64rem) {
     .lg\:col-span-1 {
       grid-column: span 1 / span 1;

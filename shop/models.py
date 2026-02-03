@@ -100,7 +100,7 @@ class EventInquiry(models.Model):
     event_date = models.DateField()
     guest_count = models.PositiveIntegerField()
     location = models.CharField(max_length=255)
-    package_choice = models.CharField(max_length=255)
+    package_choice = models.ManyToManyField(Product, help_text="Please select one or more of the packages")
     notes = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='new')
     created_at = models.DateTimeField(auto_now_add=True)

@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             toast.classList.add('translate-x-full', 'opacity-0');
             setTimeout(() => toast.remove(), 500);
-        }, 5000);
+        }, 10000);
     });
 });
 
@@ -96,6 +96,7 @@ async function renderDrawerItems(button) {
 }
 
 async function updateCart(itemId, action, button) {
+    button.disabled = true
     const qtySpan = document.getElementById(`qty-val-${itemId}`)
     const quantity = qtySpan ? Number(qtySpan.innerHTML) : 0
     let new_quantity = 0
@@ -131,6 +132,8 @@ async function updateCart(itemId, action, button) {
         }
     } catch (error) {
         console.log("Error:". error)
+    } finally {
+        button.disabled = false
     }
 
 }

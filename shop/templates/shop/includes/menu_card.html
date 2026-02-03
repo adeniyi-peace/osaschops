@@ -3,7 +3,7 @@
 {% with qty=cart|get_pack_qty:item.id %}
 <div id="menu-card-{{item.id}}" class="flex items-center justify-between bg-white rounded-3xl shadow-card overflow-hidden hover:shadow-heavy transition-all duration-300 group
         {% if not item.is_available %} grayscale opacity-75 pointer-events-none {% elif not open_status.is_open %} opacity-95 {% endif %}" 
-    data-aos="fade-up">
+    {% if not reload %}data-aos="fade-up"{% endif %}>
     
     <div class="flex-1 p-5 md:p-8 flex flex-col justify-between gap-4">
         <div>

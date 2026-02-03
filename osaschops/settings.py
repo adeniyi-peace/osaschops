@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import environ
 import os
+import dj_database_url
 
 env = environ.Env(
     DEBUG=(bool, True),
@@ -31,9 +32,25 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 SECRET_KEY = 'django-insecure-z2i19b8i94q!yyq%t=_%j6d-cztrf1y%-i)j-50bjod@2c(mpq'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = []
+if DEBUG == False:
+    DOMAIN_NAME = env("ALLOWED_HOSTS", default="")
+    ALLOWED_HOSTS = [DOMAIN_NAME]
+
+    CSRF_TRUSTED_ORIGINS = [
+        f"https://{DOMAIN_NAME}",
+        f"http://{DOMAIN_NAME}"
+    ]
+
+else:
+    ALLOWED_HOSTS = ["*", "127.0.0.1"]
+
+    CSRF_TRUSTED_ORIGINS = [
+        "https://*.ngrok.io",
+        "https://*.ngrok-free.app"
+    ]
+
 
 
 # Application definition
@@ -58,12 +75,15 @@ INSTALLED_APPS = [
     "channels",
     "phonenumber_field",
 
+    "storages",
+
     # for file removal after changes
     "django_cleanup.apps.CleanupConfig",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -111,12 +131,40 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if DEBUG == False:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            url=env("DATABASE_URL"),
+            conn_max_age=600, # Optional: controls connection pooling
+            conn_health_checks=True # Optional: checks connection health
+        )
     }
-}
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
+
+    AWS_ACCESS_KEY_ID = env("BACKBLAZE_S2_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = env("BACKBLAZE_S2_SECRET_KEY")
+    AWS_STORAGE_BUCKET_NAME = env("BACKBLAZE_S2_NAME")
+    AWS_S3_REGION_NAME = env("AWS_S3_REGION_NAME")
+    AWS_S3_ENDPOINT_URL = f'https://s3.{AWS_S3_REGION_NAME}.backblazeb2.com' 
+    AWS_S3_FILE_OVERWRITE = False
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
 
 
 # Password validation
@@ -157,6 +205,7 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR/"static"
 ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -169,7 +218,10 @@ NPM_BIN_PATH = "C:/Program Files/nodejs/npm.cmd"
 
 CART_SESSION_ID = "cart"
 
-MEDIA_URL = "media/"
+if DEBUG == False:
+    MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/media/"
+else:
+    MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR/"media"
 
 PAYSTACK_SECRET_KEY = env("PAYSTACK_SECRET_KEY")

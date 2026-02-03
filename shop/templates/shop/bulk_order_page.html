@@ -114,9 +114,11 @@
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Package Choice</span></label>
                         {{form.package_choice}}
+                        <p class="label-text-alt font-black uppercase italic text-[9px] tracking-tighter">{{form.package_choice.help_text}}</p>
                         {% if form.package_choice.errors %}
                             <label class="label p-0 mt-1"><span class="label-text-alt text-red-600 font-black uppercase italic text-[9px] tracking-tighter">{{ form.package_choice.errors.0 }}</span></label>
                         {% endif %}
+                    </div>
 
                     <div class="form-control">
                         <label class="label"><span class="label-text font-bold uppercase text-[10px] tracking-widest">Additional Notes</span></label>

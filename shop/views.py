@@ -41,34 +41,7 @@ class MenuView(View):
         }
 
         return render(request, "shop/menu.html", context)
-    
-    def post(self, request):
-        """AJAX add-to-cart and re-render product list WITH ACTIVE FILTERS & PAGINATION"""
-        cart = Cart(request)
 
-        category = request.GET.get("category")
-
-        products = Product.objects.all()
-
-        if category:
-            products = products.filter(category__slug=category)
-
-        product_id = request.POST.get("product_id")
-        cart.add_product(product_id=product_id)
-
-        html = render_to_string(
-            "shop/includes/menu_card.html",
-            {
-                "products": products,
-                "cart": cart,
-                "filters": request.GET,
-                # Ensures opens status is not false
-                "open_status":{"is_open":True}
-            },
-            request=request
-        )
-
-        return JsonResponse({"html": html, "status": True, "cart":len(cart)})
     
 class BulkOrderView(FormView):
     form_class = BulkOrderForm
