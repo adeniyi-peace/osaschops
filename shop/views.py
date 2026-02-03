@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic import View, FormView, TemplateView
 from django.db.models import Count
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -56,3 +56,7 @@ class BulkOrderView(FormView):
 
 class AboutUsPage(TemplateView):
     template_name="shop/about_us_page.html"
+
+class HealthView(View):
+    def get(self, request):
+        return  HttpResponse("OK")
