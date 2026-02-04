@@ -20,9 +20,11 @@
         </div>
 
         <div class="relative" data-aos="fade-left">
+            {% if store.team_image %}
             <div class="aspect-square rounded-[3rem] overflow-hidden shadow-heavy border-8 border-cream">
-                <img src="{% static 'images/about-chef.jpg' %}" alt="Our Kitchen" class="w-full h-full object-cover">
+                <img src="{{store.team_image.url}}" alt="Our Kitchen" class="w-full h-full object-cover">
             </div>
+            {% endif %}
             <div class="absolute -bottom-10 -left-10 bg-charcoal text-white p-8 rounded-3xl shadow-heavy hidden md:block">
                 <p class="text-4xl font-black text-primary italic">100%</p>
                 <p class="text-xs font-bold uppercase tracking-widest text-gray-400">Freshly Fried <br>Guaranteed</p>

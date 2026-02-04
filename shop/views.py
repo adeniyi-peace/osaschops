@@ -57,6 +57,13 @@ class BulkOrderView(FormView):
 class AboutUsPage(TemplateView):
     template_name="shop/about_us_page.html"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        store = StoreSetting.objects.first()
+        context["store"] = store
+        return context
+
+
 class HealthView(View):
     def get(self, request):
         return  HttpResponse("OK")

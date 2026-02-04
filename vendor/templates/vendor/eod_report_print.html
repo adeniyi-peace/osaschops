@@ -5,6 +5,11 @@
 <head>
     <meta charset="UTF-8">
     <title>EOD Report - {{ date|date:"Y-m-d" }}</title>
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    
+    <link rel="apple-touch-icon" href="{% static 'images/favicon.png' %}">
+    
+    <link rel="shortcut icon" href="{% static 'images/favicon.png' %}">
     {% tailwind_css %}
     <style>
         @media print {

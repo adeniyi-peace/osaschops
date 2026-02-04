@@ -2,6 +2,8 @@
 {% load static %}
 {% load humanize %}
 
+{% block title %}Osaschops | Cart {% endblock %}
+
 {% block content %}
 <section class="bg-base-200/50 min-h-screen pb-24">
     <div class="container mx-auto px-4 py-8">
@@ -50,7 +52,7 @@
                         <div class="flex justify-between items-end">
                             <span class="font-heading font-bold uppercase">Grand Total</span>
                             <span class="text-3xl font-black text-primary tracking-tighter" id="grand-total">
-                                ₦{{ total_price|intcomma }}
+                                ₦{{ cart.get_total_cost|intcomma }}
                             </span>
                         </div>
                         <div class="flex justify-between text-gray-400 font-medium">
@@ -65,18 +67,19 @@
                             <span class="text-3xl font-black text-primary tracking-tighter">₦{{ total_price }}</span>
                         </div> -->
                     </div>
-
-                    {% if open_status.is_open %}
-                        <a href="{% url 'checkout' %}" class="btn btn-primary w-full btn-lg rounded-full text-soft-black font-black uppercase italic shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform">
-                            Proceed to Checkout
-                        </a>
-                    {% else %}
-                        <button disabled class="btn btn-disabled w-full btn-lg rounded-full bg-white/10 text-white/30 font-black uppercase italic border-none cursor-not-allowed">
-                            Kitchen Closed
-                        </button>
-                        <a href="https://wa.me/{{ STORE.whatsapp_number }}" class="btn btn-outline btn-primary w-full rounded-full mt-3 font-black uppercase text-xs">
-                            Pre-order via WhatsApp
-                        </a>
+                    {% if cart.cart.items %}
+                        {% if open_status.is_open %}
+                            <a href="{% url 'checkout' %}" class="btn btn-primary w-full btn-lg rounded-full text-soft-black font-black uppercase italic shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform">
+                                Proceed to Checkout
+                            </a>
+                        {% else %}
+                            <button disabled class="btn btn-disabled w-full btn-lg rounded-full bg-white/10 text-white/30 font-black uppercase italic border-none cursor-not-allowed">
+                                Kitchen Closed
+                            </button>
+                            <a href="https://wa.me/{{ STORE.whatsapp_number }}" class="btn btn-outline btn-primary w-full rounded-full mt-3 font-black uppercase text-xs">
+                                Pre-order via WhatsApp
+                            </a>
+                        {% endif %}
                     {% endif %}
 
                     <div class="mt-6 flex items-center justify-center gap-2 text-xs text-gray-500 uppercase font-bold tracking-widest">

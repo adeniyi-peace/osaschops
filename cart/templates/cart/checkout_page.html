@@ -2,6 +2,8 @@
 {% load static %}
 {% load humanize %}
 
+{% block title %}Osaschops | Checkout {% endblock %}
+
 {% block content %}
 <section class="bg-base-200/50 min-h-screen pb-20">
     <div class="container mx-auto px-4 py-8">
@@ -188,22 +190,24 @@
                         </div>
                     </div>
 
-                    {% if open_status.is_open %}
-                        <button type="submit" class="btn btn-primary w-full btn-lg rounded-full mt-8 text-soft-black font-black uppercase italic shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform">
-                            Confirm & Pay
-                        </button>
-                    {% else %}
-                        <div class="mt-8 space-y-3">
-                            <button type="button" disabled class="btn btn-disabled w-full btn-lg rounded-full bg-white/5 border-none text-white/20 font-black uppercase italic">
-                                Closed for Today
+                    {% if cart.cart.items %}
+                        {% if open_status.is_open %}
+                            <button type="submit" class="btn btn-primary w-full btn-lg rounded-full mt-8 text-soft-black font-black uppercase italic shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-transform">
+                                Confirm & Pay
                             </button>
-                            <p class="text-[10px] text-center text-error font-bold uppercase tracking-widest italic">
-                                {{ open_status.message }}
-                            </p>
-                            <a href="https://wa.me/{{ STORE.whatsapp_number }}" class="btn btn-outline btn-primary w-full rounded-full font-black uppercase text-xs">
-                                WhatsApp Pre-order
-                            </a>
-                        </div>
+                        {% else %}
+                            <div class="mt-8 space-y-3">
+                                <button type="button" disabled class="btn btn-disabled w-full btn-lg rounded-full bg-white/5 border-none text-white/20 font-black uppercase italic">
+                                    Closed for Today
+                                </button>
+                                <p class="text-[10px] text-center text-error font-bold uppercase tracking-widest italic">
+                                    {{ open_status.message }}
+                                </p>
+                                <a href="https://wa.me/{{ STORE.whatsapp_number }}" class="btn btn-outline btn-primary w-full rounded-full font-black uppercase text-xs">
+                                    WhatsApp Pre-order
+                                </a>
+                            </div>
+                        {% endif %}
                     {% endif %}
 
                     <p class="text-[10px] text-center text-gray-500 mt-6 uppercase tracking-widest font-bold">

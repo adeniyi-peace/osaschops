@@ -64,7 +64,7 @@ Unlike standard e-commerce templates, this project focuses on **real-world opera
     ```bash
     pip install -r requirements.txt
 
-3. **Environment Variables Create a .env file in the root directory and add your keys:**
+4. **Environment Variables Create a .env file in the root directory and add your keys:**
     ```Code snippet
     SECRET_KEY=your_django_secret_key
     DEBUG=True
@@ -72,19 +72,29 @@ Unlike standard e-commerce templates, this project focuses on **real-world opera
     PAYSTACK_PUBLIC_KEY=your_paystack_public_key
     ```
 
-4. **Run Migrations**
+5. **Run Migrations**
     ```bash
     python manage.py makemigrations
     python manage.py migrate
 
-5. **Create a Superuser (to access the admin panel)**
+6. **Create a Superuser (to access the admin panel)**
     ```bash
     python manage.py createsuperuser
 
-6. **Run the Server**
+7. **Critical Step: Configure Store Profile To avoid a 500 Server Error, you must initialize the store settings:**
+    - Run the server: python manage.py runserver
+    - Log in to the Admin panel at http://127.0.0.1:8000/admin
+    - Navigate to the Store Profile (or Vendor) tab.
+    - Create exactly one instance of the vendor profile.
+    - **Note**: Do not change the default name; the system requires exactly one instance to function correctly.
+
+8. **Run the Server**
     ```bash
     python manage.py runserver
     Visit http://127.0.0.1:8000 in your browser.
+
+9. **Manage Categories**
+    Products are organized by categories. Currently, Categories can only be created or edited via the Django Admin panel.
 
 
 ## Key Workflows Explained
@@ -98,4 +108,4 @@ Unlike standard e-commerce templates, this project focuses on **real-world opera
 - **EOD Report Generation**
     The EODReportView aggregates data from the Order, OrderItem, and Payment models. It uses a specialized print template (media print CSS) to strip away navigation bars and buttons, producing a clean, professional invoice format for physical printing.
 
-Developed with ❤️ by [Your Name]
+Developed with ❤️ by Adeniyi Peace
