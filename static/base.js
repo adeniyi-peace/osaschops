@@ -95,8 +95,8 @@ async function renderDrawerItems(button) {
     }
 }
 
-async function updateCart(itemId, action, button) {
-    button.disabled = true
+async function updateCart(itemId, action, button, itemName) {
+    const buttonContainer = document.getElementById(`btn-container-${itemId}`)
     const qtySpan = document.getElementById(`qty-val-${itemId}`)
     const quantity = qtySpan ? Number(qtySpan.innerHTML) : 0
     let new_quantity = 0
@@ -108,6 +108,30 @@ async function updateCart(itemId, action, button) {
     else if (action === "decrease") {
         new_quantity = quantity - 1
     }
+
+    if (new_quantity > 0) {
+        const buttonUpdate = `
+            <div id="qty-ctrl-${itemId}" 
+                class="flex items-center bg-primary text-soft-black h-12 transition-all duration-300">
+                <button onclick="updateCart('${itemId}', 'decrease', this)" aria-label="Decrease quantity" class="px-3 h-full hover:bg-primary-dark active:bg-primary-dark transition-colors font-black text-lg">−</button>
+                <span id="qty-val-${itemId}" class="px-2 font-black min-w-5 text-center">${ new_quantity }</span>
+                <button onclick="updateCart('${itemId}', 'increase', this)" aria-label="Increase quantity" class="px-3 h-full hover:bg-primary-dark active:bg-primary-dark transition-colors font-black text-lg">+</button>
+            </div>`
+        buttonContainer.innerHTML = buttonUpdate
+    } else {
+        const buttonUpdate =` 
+            <button  
+                onclick="updateCart('${itemId}', 'increase', this)"
+                aria-label="Add ${itemName} to cart"
+                class="w-12 h-12 bg-charcoal text-white flex items-center justify-center hover:bg-primary hover:text-soft-black transition-all active:scale-95">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>`
+        buttonContainer.innerHTML = buttonUpdate
+    }
+
+    buttonContainer.querySelectorAll("button").forEach(button => {button.disabled=true})
 
     try {
         response = await fetch(`/cart/add-to-cart/`, {
@@ -123,17 +147,37 @@ async function updateCart(itemId, action, button) {
         }
         const data = await response.json()
         if (data.success === true) {
-            const menu_card = document.getElementById(`menu-card-${itemId}`)
-            const listContainer = document.getElementById('drawer-items-list');
             const cart = document.getElementById("cart_item_number")
-            menu_card.outerHTML = data.html_1
-            listContainer.innerHTML = data.html_2
+
+            
             cart.innerHTML = data.cart
         }
     } catch (error) {
         console.log("Error:". error)
+        // revert back if there is an error
+        if (quantity > 0) {
+            const buttonUpdate = `
+                <div id="qty-ctrl-${itemId}" 
+                    class="flex items-center bg-primary text-soft-black h-12 transition-all duration-300">
+                    <button onclick="updateCart('${itemId}', 'decrease', this)" aria-label="Decrease quantity" class="px-3 h-full hover:bg-primary-dark active:bg-primary-dark transition-colors font-black text-lg">−</button>
+                    <span id="qty-val-${itemId}" class="px-2 font-black min-w-5 text-center">${ quantity }</span>
+                    <button onclick="updateCart('${itemId}', 'increase', this)" aria-label="Increase quantity" class="px-3 h-full hover:bg-primary-dark active:bg-primary-dark transition-colors font-black text-lg">+</button>
+                </div>`
+            buttonContainer.innerHTML = buttonUpdate
+        } else {
+            const buttonUpdate =` 
+                <button  
+                    onclick="updateCart('${itemId}', 'increase', this)"
+                    aria-label="Add ${itemName} to cart"
+                    class="w-12 h-12 bg-charcoal text-white flex items-center justify-center hover:bg-primary hover:text-soft-black transition-all active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+                    </svg>
+                </button>`
+            buttonContainer.innerHTML = buttonUpdate
+        }
     } finally {
-        button.disabled = false
+        buttonContainer.querySelectorAll("button").forEach(button => {button.disabled=false})
     }
 
 }

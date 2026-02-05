@@ -109,10 +109,6 @@ class Cart(object):
         self.session.modified = True
     
 
-    def save(self):
-        self.session[settings.CART_SESSION_ID] = self.cart
-        self.session.modified = True
-
 
     def add(self, product_id, quantity=1, update_quantity=False, pack_id=None):
         # Use provided pack_id or fall back to the active one

@@ -62,13 +62,13 @@
                 {% if qty > 0 %}
                 <div id="qty-ctrl-{{ item.id }}" 
                     class="flex items-center bg-primary text-soft-black h-12 transition-all duration-300">
-                    <button onclick="updateCart('{{ item.id }}', 'decrease', this)" aria-label="Decrease quantity" class="px-3 h-full hover:bg-primary-dark transition-colors font-black text-lg">−</button>
+                    <button onclick="updateCart('{{ item.id }}', 'decrease', this, '{{ item.name }}')" aria-label="Decrease quantity" class="px-3 h-full hover:bg-primary-dark active:bg-primary-dark transition-colors font-black text-lg">−</button>
                     <span id="qty-val-{{ item.id }}" class="px-2 font-black min-w-5 text-center">{{ qty }}</span>
-                    <button onclick="updateCart('{{ item.id }}', 'increase', this)" aria-label="Increase quantity" class="px-3 h-full hover:bg-primary-dark transition-colors font-black text-lg">+</button>
+                    <button onclick="updateCart('{{ item.id }}', 'increase', this, '{{ item.name }}')" aria-label="Increase quantity" class="px-3 h-full hover:bg-primary-dark active:bg-primary-dark transition-colors font-black text-lg">+</button>
                 </div>
                 {% else %}
                 <button  
-                    onclick="updateCart('{{ item.id }}', 'increase', this)"
+                    onclick="updateCart('{{ item.id }}', 'increase', this, '{{ item.name }}')"
                     aria-label="Add {{ item.name }} to cart"
                     class="w-12 h-12 bg-charcoal text-white flex items-center justify-center hover:bg-primary hover:text-soft-black transition-all active:scale-95">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

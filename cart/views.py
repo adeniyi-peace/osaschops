@@ -90,18 +90,9 @@ class AddToCartView(View):
         pack_id = data.get("pack_id") 
 
         # Our new cart.add method handles the pack logic
-        cart.add(item_id, quantity=int(quantity), update_quantity=True, pack_id=pack_id)
+        cart.add(item_id, quantity=int(quantity), update_quantity=True, pack_id=pack_id)        
 
-        item = get_object_or_404(Product, id=item_id)
-
-        html_1 = render_to_string(
-            "shop/includes/menu_card.html", 
-            {"cart":cart, "item":item, "open_status":{"is_open": True}, "reload":True}, 
-            request
-        )
-        html_2 = render_to_string("cart/includes/cart_drawer.html", {"cart":cart}, request)
-
-        return JsonResponse({"success":True, "html_1":html_1, "html_2":html_2, "cart":len(cart)})
+        return JsonResponse({"success":True, "quantity":int(quantity), "cart":len(cart)})
 
 
 class ManagePackView(View):
